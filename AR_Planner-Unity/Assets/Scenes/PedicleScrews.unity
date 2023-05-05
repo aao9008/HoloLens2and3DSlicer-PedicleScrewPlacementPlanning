@@ -4400,7 +4400,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SPINE
+  m_text: SKIN
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6365,6 +6365,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ReleaseSpineButton
       objectReference: {fileID: 0}
+    - target: {fileID: 5466303684726816390, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
+      propertyPath: m_text
+      value: Modify skin
+      objectReference: {fileID: 0}
     - target: {fileID: 5466303684955116024, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -6419,7 +6423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5466303685302859490, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_text
-      value: Release spine
+      value: Release skin
       objectReference: {fileID: 0}
     - target: {fileID: 5712702240375973469, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6431,11 +6435,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5712702241517646156, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_text
-      value: Show spine ON
+      value: Show skin ON
       objectReference: {fileID: 0}
     - target: {fileID: 5712702241517646158, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_Name
       value: ShowSpineLabel
+      objectReference: {fileID: 0}
+    - target: {fileID: 5712702241665747905, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5714570034538599341, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_IsActive

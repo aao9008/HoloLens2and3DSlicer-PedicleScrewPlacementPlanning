@@ -38,6 +38,12 @@ public class PressableButtons : MonoBehaviour
     Color fixSpineColor; // Color of the spine when it's fixed in the 3D world
     Color mobileSpineColor; // Color of the spine when it can be moved in the 3D world
 
+    // Model of the anatomy (major organs) corresponding to the patient "patientNumber"
+    GameObject anatomyModel;
+    Material anatomy_mat;
+
+    GameObject targetsModel; // Model of the target points corresponding to the patient "patientNumber"
+    Material targets_mat;
 
     /// SCREWS INFORMATION ///
     Material screwMobile_mat; // Material of the screw when it can be moved in the 3D world
@@ -69,7 +75,25 @@ public class PressableButtons : MonoBehaviour
         spineModel.name = spineModelName; // Change the spine model name to spineModelName
         spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
         spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
-        
+
+
+        string anatomyModelName = "P00" + patientNumber + "-Anatomy"; // anatomy model contains various organs to give context for the manipulation
+        string anatomyModelPath = Path.Combine("Prefabs", "SpinePrefabs", anatomyModelName); // Path to the prefab
+        GameObject anatomyItem = Resources.Load(anatomyModelPath) as GameObject; // Load the Model
+        anatomyModel = GameObject.Instantiate(anatomyItem, modelsParentTransform) as GameObject; // Instantiate the anatomy as a child of modelsParentTransform
+        anatomyModel.name = anatomyModelName; // Change the model name
+        anatomyModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
+        anatomyModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+
+        string targetsModelName = "P00" + patientNumber + "-Targets"; // targets model contains various organs to give context for the manipulation
+        string targetsModelPath = Path.Combine("Prefabs", "SpinePrefabs", targetsModelName); // Path to the prefab
+        GameObject targetsItem = Resources.Load(targetsModelPath) as GameObject; // Load the Model
+        targetsModel = GameObject.Instantiate(targetsItem, modelsParentTransform) as GameObject; // Instantiate the targets as a child of modelsParentTransform
+        targetsModel.name = targetsModelName; // Change the model name
+        targetsModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
+        targetsModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+
+
         // Intantiate the image body within the spine model
         string imageModelPath = Path.Combine("Prefabs", "ImagePrefab", "MobileCTPlane"); // Path to the image prefab
         GameObject imageItem = Resources.Load(imageModelPath) as GameObject; // Load the image model
@@ -94,6 +118,15 @@ public class PressableButtons : MonoBehaviour
         //// Also set the clipping plane color to mobile
         clipping_mat = Resources.Load("Materials/Clipping_mat") as Material; // Load the material of interest from the path
         clipping_mat.SetColor("_Color", mobileSpineColor); // Align the color of clipping_mat with the color of the spine (mobileSpineColor in this case) 
+
+
+        // Initialize the spine colors that will indicate if its mobile or not
+        anatomy_mat = Resources.Load("Materials/Anatomy_mat") as Material;
+        anatomyModel.GetComponentInChildren<MeshRenderer>().material = anatomy_mat;
+
+        targets_mat = Resources.Load("Materials/Targets_mat") as Material;
+        targetsModel.GetComponentInChildren<MeshRenderer>().material = targets_mat;
+
 
         // Initialize the screw variables
         screwSelected = 0;
