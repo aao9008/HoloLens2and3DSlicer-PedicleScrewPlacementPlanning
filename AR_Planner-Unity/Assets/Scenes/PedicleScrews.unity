@@ -1281,7 +1281,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 937783102, guid: 45fd0ad89d6d17b4fbe68eb48dbe9de9, type: 3}
       propertyPath: m_text
-      value: Next screw
+      value: Next needle
       objectReference: {fileID: 0}
     - target: {fileID: 937783102, guid: 45fd0ad89d6d17b4fbe68eb48dbe9de9, type: 3}
       propertyPath: m_textAlignment
@@ -4760,7 +4760,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SCREWS
+  m_text: NEEDLES
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5029,7 +5029,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Screw: X'
+  m_text: 'Needle: X'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5401,7 +5401,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4789151614978768031, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_text
-      value: Modify screw
+      value: Modify needle
       objectReference: {fileID: 0}
     - target: {fileID: 4789151614978768031, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_textAlignment
@@ -5445,7 +5445,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5909813012387630246, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_text
-      value: Delete screw
+      value: Delete needle
       objectReference: {fileID: 0}
     - target: {fileID: 5909813012387630246, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_textAlignment
@@ -5477,7 +5477,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5909813012665681011, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_text
-      value: Release screw
+      value: Release needle
       objectReference: {fileID: 0}
     - target: {fileID: 5909813012665681011, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_textAlignment
@@ -5505,7 +5505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5909813012888732866, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_text
-      value: Create screw
+      value: Create needle
       objectReference: {fileID: 0}
     - target: {fileID: 5909813012888732866, guid: 9db3c1f5a57fb2b40ae4b085f123abfe, type: 3}
       propertyPath: m_textAlignment
@@ -6109,6 +6109,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClipSpineLabel
       objectReference: {fileID: 0}
+    - target: {fileID: 677829695628688110, guid: 92303a440790a284894abeb1694b9fac, type: 3}
+      propertyPath: m_text
+      value: Clip anatomy OFF
+      objectReference: {fileID: 0}
     - target: {fileID: 3571694289215821128, guid: 92303a440790a284894abeb1694b9fac, type: 3}
       propertyPath: voiceCommand
       value: Show image
@@ -6287,7 +6291,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2883588981209468447, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: voiceCommand
-      value: Show spine
+      value: Toggle skin
+      objectReference: {fileID: 0}
+    - target: {fileID: 2883588981209468447, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
+      propertyPath: voiceRequiresFocus
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2883588981209468447, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: startDimensionIndex
@@ -6295,7 +6303,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3215357584985196977, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: voiceCommand
-      value: Release spine
+      value: Lock body
       objectReference: {fileID: 0}
     - target: {fileID: 3215357584985196977, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: voiceRequiresFocus
@@ -6315,7 +6323,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3215357585415258581, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: voiceCommand
-      value: Modify spine
+      value: Unlock body
       objectReference: {fileID: 0}
     - target: {fileID: 3215357585415258581, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: voiceRequiresFocus
@@ -6367,7 +6375,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5466303684726816390, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_text
-      value: Modify skin
+      value: Unlock body
       objectReference: {fileID: 0}
     - target: {fileID: 5466303684955116024, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_RootOrder
@@ -6423,7 +6431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5466303685302859490, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_text
-      value: Release skin
+      value: Lock body
       objectReference: {fileID: 0}
     - target: {fileID: 5712702240375973469, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6435,7 +6443,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5712702241517646156, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_text
-      value: Show skin ON
+      value: Toggle skin
       objectReference: {fileID: 0}
     - target: {fileID: 5712702241517646158, guid: cc00632b0be680849b682e403fa1b2d7, type: 3}
       propertyPath: m_Name

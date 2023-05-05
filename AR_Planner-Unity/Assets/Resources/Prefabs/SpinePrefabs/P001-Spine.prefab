@@ -13,7 +13,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalPosition.y
@@ -25,7 +25,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalRotation.x
@@ -33,11 +33,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -49,7 +49,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -5304457597003473624, guid: dae61d718572cf145bfa6b3e86741160, type: 3}
       propertyPath: m_IsActive
@@ -90,8 +90,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.59742975, y: 0.23586524, z: 0.55531263}
-  m_Center: {x: 0.18955433, y: -0.38206738, z: -0.5488226}
+  m_Size: {x: 0.48116812, y: 0.3141019, z: 0.59673166}
+  m_Center: {x: -0.014018789, y: -0.038366944, z: -0.3478176}
 --- !u!114 &5504824331564980824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +121,7 @@ MonoBehaviour:
   hostTransform: {fileID: 6064985907461545274}
   manipulationType: 3
   twoHandedManipulationType: 3
-  allowFarManipulation: 1
+  allowFarManipulation: 0
   useForcesForNearManipulation: 0
   oneHandRotationModeNear: 1
   oneHandRotationModeFar: 1

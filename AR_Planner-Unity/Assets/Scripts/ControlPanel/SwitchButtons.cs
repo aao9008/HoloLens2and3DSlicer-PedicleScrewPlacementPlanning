@@ -115,7 +115,7 @@ public class SwitchButtons : MonoBehaviour
         spineVisibility_SwitchGO = spineVisibility_Switch.gameObject;
         // Change the label to ON (the spine is visible)
         spineVisibility_label = GameObject.Find("ShowSpineLabel").GetComponent<TextMeshPro>();
-        spineVisibility_label.text = "Spine ON";
+        //spineVisibility_label.text = "Skin ON";
         // Load the invisible material from the path
         invisible_mat = Resources.Load("Materials/Invisible_mat") as Material;
         
@@ -211,14 +211,14 @@ public class SwitchButtons : MonoBehaviour
     void OnClipSpineON(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the clipping material to the spine. This material is already associated to the image plane, by definition
-        spineModel.GetComponentInChildren<MeshRenderer>().material = clipping_mat;
+        //spineModel.GetComponentInChildren<MeshRenderer>().material = clipping_mat;
         clipSpine_label.text = "Clip spine ON";
     }
     // This function is called everytime the user deactivates the clipping tool
     void OnClipSpineOFF(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the spine material to the spine (no clipping)
-        spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat;
+        //spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat;
         clipSpine_label.text = "Clip spine OFF";
     }
 
@@ -227,19 +227,21 @@ public class SwitchButtons : MonoBehaviour
     void OnTurnModelON(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the visible material to the spine
-        spineModel.GetComponentInChildren<MeshRenderer>().material = visible_mat;
+        //spineModel.GetComponentInChildren<MeshRenderer>().material = visible_mat;
+        spineModel.GetComponentInChildren<MeshRenderer>().enabled = true;
         // Update the button label
-        spineVisibility_label.text = "Spine ON";
+        //spineVisibility_label.text = "Skin ON";
     }
 
     // This function is called everytime the user deactivates the spine visibility switch button
     void OnTurnModelOFF(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the non-visible material to the spine
-        visible_mat = spineModel.GetComponentInChildren<MeshRenderer>().material; // the visible material could be spine_mat or clipping_mat
-        spineModel.GetComponentInChildren<MeshRenderer>().material = invisible_mat;
+        //visible_mat = spineModel.GetComponentInChildren<MeshRenderer>().material; // the visible material could be spine_mat or clipping_mat
+        //spineModel.GetComponentInChildren<MeshRenderer>().material = invisible_mat;
+        spineModel.GetComponentInChildren<MeshRenderer>().enabled = false;
         // Update the button label
-        spineVisibility_label.text = "Spine OFF";
+        //spineVisibility_label.text = "Skin OFF";
     }
 
     /// SHOW IMAGE ///
@@ -279,7 +281,7 @@ public class SwitchButtons : MonoBehaviour
         // Update the show image label
         showImage_label.text = "Image OFF";
         // Assign the spine_mat to the spine (in case it has the clipping mat)
-        spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat;
+        //spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat;
     }
 
     // This function is called everytime the user fixes the image plane in the 3D world using the corresponging switch button

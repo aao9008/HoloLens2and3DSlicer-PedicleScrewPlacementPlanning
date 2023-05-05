@@ -74,13 +74,14 @@ public class PressableButtons : MonoBehaviour
         spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
         spineModel.name = spineModelName; // Change the spine model name to spineModelName
         spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
-        spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+        //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+        spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
 
 
         string anatomyModelName = "P00" + patientNumber + "-Anatomy"; // anatomy model contains various organs to give context for the manipulation
         string anatomyModelPath = Path.Combine("Prefabs", "SpinePrefabs", anatomyModelName); // Path to the prefab
         GameObject anatomyItem = Resources.Load(anatomyModelPath) as GameObject; // Load the Model
-        anatomyModel = GameObject.Instantiate(anatomyItem, modelsParentTransform) as GameObject; // Instantiate the anatomy as a child of modelsParentTransform
+        anatomyModel = GameObject.Instantiate(anatomyItem, spineModel.transform) as GameObject; // Instantiate the anatomy as a child of spineModel
         anatomyModel.name = anatomyModelName; // Change the model name
         anatomyModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
         anatomyModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
@@ -88,7 +89,7 @@ public class PressableButtons : MonoBehaviour
         string targetsModelName = "P00" + patientNumber + "-Targets"; // targets model contains various organs to give context for the manipulation
         string targetsModelPath = Path.Combine("Prefabs", "SpinePrefabs", targetsModelName); // Path to the prefab
         GameObject targetsItem = Resources.Load(targetsModelPath) as GameObject; // Load the Model
-        targetsModel = GameObject.Instantiate(targetsItem, modelsParentTransform) as GameObject; // Instantiate the targets as a child of modelsParentTransform
+        targetsModel = GameObject.Instantiate(targetsItem, spineModel.transform) as GameObject; // Instantiate the targets as a child of spineModel
         targetsModel.name = targetsModelName; // Change the model name
         targetsModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
         targetsModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
@@ -110,8 +111,8 @@ public class PressableButtons : MonoBehaviour
 
         // Initialize the spine colors that will indicate if its mobile or not
         spine_mat = Resources.Load("Materials/Spine_mat") as Material; // Load the material of interest from the path
-        fixSpineColor = new Color(0.8f, 0.8f, 0.4f, 1.0f); // Define the fixSpineColor in the RGBA format
-        mobileSpineColor = new Color(0.8f, 0.8f, 0.8f, 1.0f); // Define the mobileSpineColor in the RGBA format
+        fixSpineColor = new Color(0.8f, 0.8f, 0.4f, 0.1f); // Define the fixSpineColor in the RGBA format
+        mobileSpineColor = new Color(0.8f, 0.5f, 0.5f, 1.0f); // Define the mobileSpineColor in the RGBA format
         //// Set the initial color to mobile
         spine_mat.SetColor("_Color", mobileSpineColor); // Set mobileSpineColor as the initial color of the spine
         spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat; // Assign this color to the spineModel
@@ -140,7 +141,7 @@ public class PressableButtons : MonoBehaviour
         screwFixed_mat = Resources.Load("Materials/ScrewFixed_mat") as Material; // Load the material of interest from the path
         //// Set the screw number label
         screwSelected_label = GameObject.Find("ControlPanel").transform.Find("ScrewButtons").transform.Find("ButtonCollection").transform.Find("ScrewNumberLabel").GetComponent<TextMeshPro>(); // Find the screwSelected_label GameObject in the hierarchy and retrieve its TextMeshPro components
-        screwSelected_label.text = "Screw X"; // Set the initial label to "Screw X" (The scene is initialized with no screws on the scene)
+        screwSelected_label.text = "Needle X"; // Set the initial label to "Needle X" (The scene is initialized with no screws on the scene)
         
         //// Initialize the image handler color
         Material imageHandlerMobile_mat = Resources.Load("Materials/ImageMobile_mat") as Material; // Path to the mobile image color
