@@ -6,15 +6,17 @@ using Microsoft.MixedReality.Toolkit.UI;
 
 public class ModelImporter : MonoBehaviour
 {
-    public static void CreatePrefab(string modelName)
+    // This method is called to crate a prafab from an OBJ model
+    public static void CreatePrefab(string patientID, string modelName)
     {
-        GameObject importedObj = ImportObj(modelName);
-        SavePrefab(importedObj, modelName);
+        GameObject importedObj = ImportObj(patientID, modelName);
+        SavePrefab(importedObj, patientID, modelName);
     }
 
-    public static GameObject ImportObj(string modelName)
+    // Logic for importing an OBJ model as a GameObject into Unity
+    public static GameObject ImportObj(string patientID, string modelName)
     {
-        GameObject model = Resources.Load<GameObject>("Models/SpineModels/Patient Pua/" + modelName);
+        GameObject model = Resources.Load<GameObject>(Path.Combine("Models", "SpineModels", patientID , modelName));
 
         GameObject importedObj = Instantiate(model, Vector3.zero, Quaternion.identity);
 
@@ -36,23 +38,23 @@ public class ModelImporter : MonoBehaviour
         return importedObj;
     }
 
-    public static void SavePrefab(GameObject importedObj, string modelName)
+    public static void SavePrefab(GameObject importedObj, string patientID, string modelName)
     {
         string prefabPath = Path.Combine("Assets", "Resources", "Prefabs", "SpinePrefabs");
 
-        if (!Directory.Exists(Path.Combine(prefabPath, "Patient Pua")))
+        if (!Directory.Exists(Path.Combine(prefabPath, patientID)))
         {
-            AssetDatabase.CreateFolder(prefabPath, "Patient Pua");
+            AssetDatabase.CreateFolder(prefabPath, patientID);
         }
 
-        string prefabFilePath = Path.Combine(prefabPath, "Patient Pua", modelName + ".prefab");
+        string prefabFilePath = Path.Combine(prefabPath, patientID, modelName + ".prefab");
 
         bool prefabSuccess;
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(importedObj, prefabFilePath, out prefabSuccess);
 
         if (prefabSuccess)
         {
-            Debug.Log("Prefab was saved successfully");  
+            Debug.Log(modelName + " prefab was saved successfully");  
         }
         else
         {
