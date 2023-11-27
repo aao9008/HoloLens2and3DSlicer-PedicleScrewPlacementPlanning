@@ -116,12 +116,15 @@ public class ModelImporter : MonoBehaviour
         ModelInfo modelInfoScript = prefab.AddComponent<ModelInfo>();
         // Add ObjectManipulator script
         ObjectManipulator objectManipulatorScript = prefab.AddComponent<ObjectManipulator>();
+
+        // Modify the TwoHandedManipulationType after adding the component
+        if (objectManipulatorScript != null)
+        {
+            objectManipulatorScript.ExcludeScaleManipulation();
+        }
+
         // Add NearInteractionGrabbable script
         NearInteractionGrabbable nearInteractionGrabbableScript = prefab.AddComponent<NearInteractionGrabbable>();
-
-        // You can optionally configure or set properties of the added scripts here
-        // For example:
-        // modelInfoScript.SetModelInfoData(data);
     }
 }
 
