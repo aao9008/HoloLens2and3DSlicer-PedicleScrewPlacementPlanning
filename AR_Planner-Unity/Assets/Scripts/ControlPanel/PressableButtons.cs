@@ -28,7 +28,11 @@ public class PressableButtons : MonoBehaviour
     Transform modelsParentTransform; // Parent Gameobject that contains all the models in the scene. In this app, it is called "Models"
     GameObject openIGTLinkConnectScriptHolder; // Gameobject that contains the openIGTLink script. We import it to access infoToSendArray
     List<ModelInfo> infoToSendArray; // Array of elements that will be sent to 3D Slicer. In our case, the Spine, the image plane and all the screws
-    public int patientNumber; // Number of the patient of interest. This number is used to automatically load the spine of interest
+    public List<string> patientIDs; // Array of names of patient folders. These folders hold all models for a given patient.
+    public string patientID; // Folder name of the patient of interest. This folder name/patient identifier is used to automatically load the models of interest. 
+    public string[] patientModels;
+    public string parentModel;
+    public List<GameObject> modelList = new List<GameObject>();
 
 
     /// SPINE INFORMATION ///
@@ -37,7 +41,6 @@ public class PressableButtons : MonoBehaviour
     Material clipping_mat; // Material with the clipping property
     Color fixSpineColor; // Color of the spine when it's fixed in the 3D world
     Color mobileSpineColor; // Color of the spine when it can be moved in the 3D world
-
 
     /// SCREWS INFORMATION ///
     Material screwMobile_mat; // Material of the screw when it can be moved in the 3D world
@@ -62,14 +65,41 @@ public class PressableButtons : MonoBehaviour
         modelsParentTransform = GameObject.Find("Models").transform; // Identify the modelsParentTransform in the scene
 
         // Instantiate the spine model corresponding to the patient of interest
-        string spineModelName = "P00" + patientNumber + "-Spine"; // Spine filename
-        string spineModelPath = Path.Combine("Prefabs", "SpinePrefabs", spineModelName); // Path to the spine prefab
+        string spineModelName = parentModel; // Spine filename
+        string spineModelPath = Path.Combine("Prefabs", "SpinePrefabs", patientID, parentModel); // Path to the spine prefab
         GameObject spineItem = Resources.Load(spineModelPath) as GameObject; // Load the spine Model
         spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
         spineModel.name = spineModelName; // Change the spine model name to spineModelName
         spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
-        spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
-        
+        //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+        spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
+
+
+        //////////////// Process for creating child models ///////////////////////////        
+        foreach (string model in patientModels)
+        {
+            if (model == parentModel)
+            {
+                continue;
+            }
+
+            GameObject childModel = CreateChildModel(model);
+
+           
+
+            if (MTLPresent(childModel.name))
+            {
+                FormatMTLMat(childModel);
+            }
+            else
+            {
+                AssignDefaultMat(childModel);
+            }
+           
+            modelList.Add(childModel);
+        }
+        //////////////////////// End of child model creation process///////////////////
+
         // Intantiate the image body within the spine model
         string imageModelPath = Path.Combine("Prefabs", "ImagePrefab", "MobileCTPlane"); // Path to the image prefab
         GameObject imageItem = Resources.Load(imageModelPath) as GameObject; // Load the image model
@@ -86,8 +116,8 @@ public class PressableButtons : MonoBehaviour
 
         // Initialize the spine colors that will indicate if its mobile or not
         spine_mat = Resources.Load("Materials/Spine_mat") as Material; // Load the material of interest from the path
-        fixSpineColor = new Color(0.8f, 0.8f, 0.4f, 1.0f); // Define the fixSpineColor in the RGBA format
-        mobileSpineColor = new Color(0.8f, 0.8f, 0.8f, 1.0f); // Define the mobileSpineColor in the RGBA format
+        fixSpineColor = new Color(0.8f, 0.8f, 0.4f, 0.1f); // Define the fixSpineColor in the RGBA format
+        mobileSpineColor = new Color(0.8f, 0.5f, 0.5f, 1.0f); // Define the mobileSpineColor in the RGBA format
         //// Set the initial color to mobile
         spine_mat.SetColor("_Color", mobileSpineColor); // Set mobileSpineColor as the initial color of the spine
         spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat; // Assign this color to the spineModel
@@ -107,7 +137,7 @@ public class PressableButtons : MonoBehaviour
         screwFixed_mat = Resources.Load("Materials/ScrewFixed_mat") as Material; // Load the material of interest from the path
         //// Set the screw number label
         screwSelected_label = GameObject.Find("ControlPanel").transform.Find("ScrewButtons").transform.Find("ButtonCollection").transform.Find("ScrewNumberLabel").GetComponent<TextMeshPro>(); // Find the screwSelected_label GameObject in the hierarchy and retrieve its TextMeshPro components
-        screwSelected_label.text = "Screw X"; // Set the initial label to "Screw X" (The scene is initialized with no screws on the scene)
+        screwSelected_label.text = "Needle X"; // Set the initial label to "Needle X" (The scene is initialized with no screws on the scene)
         
         //// Initialize the image handler color
         Material imageHandlerMobile_mat = Resources.Load("Materials/ImageMobile_mat") as Material; // Path to the mobile image color
@@ -140,6 +170,78 @@ public class PressableButtons : MonoBehaviour
 
     }
 
+    ///////////////////////////////// Child Model Creation Logic////////////////////
+    
+    // This function creates a child model 
+    public GameObject CreateChildModel(string model)
+    {
+        GameObject childModel; // Model of the spine corresponding to the patient "patientNumber"
+
+        string childModelName = model; // Child model filename
+        string childModelPath = Path.Combine("Prefabs", "SpinePrefabs", patientID, model); // Path to the spine prefab
+        GameObject childItem = Resources.Load(childModelPath) as GameObject; // Load the spine Model
+        childModel = GameObject.Instantiate(childItem, spineModel.transform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
+        childModel.name = childModelName; // Change the spine model name to spineModelName
+        childModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
+        childModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+
+        // Reset the child model's local scale to (1, 1, 1)
+        // When objects are nested in Unity, their transformations are relative to their parent.
+        // If the parent (spineModel) has a scale different from (1, 1, 1), it impacts the child's size.
+        // For instance, if a child object is scaled by 0.001 and then nested under a parent object scaled by .001, the overall size becomes the product of these scales.
+        childModel.transform.localScale = Vector3.one;
+
+        return childModel;
+    }
+    
+    // This function determines whether a model has MTL data associated with it or not
+    public bool MTLPresent(string modelName)
+    {
+        //Get the path of the MTL file associated witht the model
+        string mtlPath = PatientModelsFetcher.GetMTLPath(patientID, modelName);
+
+        // Check if the MTL file exists at the specified path
+        if (File.Exists(mtlPath))
+        {
+            Debug.Log("success mtl found");
+            return true; // Return true indicating the MTL file exists
+        }
+
+        // Return false indicating the MTL file does not exist
+        return false;
+    }
+
+    // This function is called when OBJ model has an associated MTL file
+    public void FormatMTLMat(GameObject childModel)
+    {
+        Material mtl_mat = childModel.GetComponentInChildren<MeshRenderer>().material;
+        Color mtlColor = mtl_mat.color;
+
+        // Load the custom material, this material has all transparency settings preset. 
+        Material child_mat = Resources.Load("Materials/Child_mat") as Material;
+
+        // Create a copy of the custom mateiral to prevent modifiying the original asset
+        // Each childModel will have it's own uniqe material copy
+        Material transparentMaterial = new Material(child_mat);
+
+        // Copy the color from the orignal material 
+        Color transparentColor = new Color(mtlColor.r, mtlColor.g, mtlColor.b, 0.2745f);
+        transparentMaterial.color = transparentColor;
+
+        // Apply the modified transparent material to the renderer of the childModel.
+        childModel.GetComponentInChildren<MeshRenderer>().material = transparentMaterial;
+    }
+
+    // This function is called when an OBJ model has no associated MTL file 
+    public void AssignDefaultMat(GameObject childModel)
+    {
+        Material anatomy_mat;
+        
+        //Material associated to the spine model                     
+        anatomy_mat = Resources.Load("Materials/Anatomy_mat") as Material;                     
+        childModel.GetComponentInChildren<MeshRenderer>().material = anatomy_mat;
+    }
+
     ////////////////////////////////// WIDGET //////////////////////////////////////
 
     // This function is called everytime the user creates a new screw, either clicking the corresponding button or speaking the associated voice command
@@ -158,7 +260,7 @@ public class PressableButtons : MonoBehaviour
         } 
         catch{}    
         // Create the new screw
-        ModelInfo screwMI = CreateScrew(numberOfScrews + 1, spineModel.transform, spineModel, localPosition, localRotation);
+        ModelInfo screwMI = CreateScrew(numberOfScrews + 1, modelsParentTransform, spineModel, localPosition, localRotation);
         // Highlight the new screw to mark it as "selected"
         screwSelected = screwMI._number;
         screwSelected_label.text =  "Screw " + screwMI._number + ":\nD" + screwMI._diameter + "L" + screwMI._length;
@@ -330,7 +432,7 @@ public class PressableButtons : MonoBehaviour
         if (modifiable)
         {
             screwMat = screwMobile_mat;
-            myGO.transform.SetParent(spineModel.transform);
+            myGO.transform.SetParent(modelsParentTransform);
         }
         else
         {
@@ -487,7 +589,7 @@ public class PressableButtons : MonoBehaviour
             // Find next diameter
             NextDiameter();
             // Create new screw with new diameter
-            ModelInfo newScrew = CreateScrew(screwSelected, spineModel.transform, spineModel, localPosition, localRotation);
+            ModelInfo newScrew = CreateScrew(screwSelected, modelsParentTransform, spineModel, localPosition, localRotation);
             // Make the new screw also modifiable
             ModifyScrew(newScrew._gameObject, modifiable);
             // Update emission mark
@@ -534,7 +636,7 @@ public class PressableButtons : MonoBehaviour
             // Find next length
             NextLength();
             // Create new screw with new length
-            ModelInfo newScrew = CreateScrew(screwSelected, spineModel.transform, spineModel, localPosition, localRotation);
+            ModelInfo newScrew = CreateScrew(screwSelected, modelsParentTransform, spineModel, localPosition, localRotation);
             // Make the new screw also modifiable
             ModifyScrew(newScrew._gameObject, modifiable);
             // Update emission mark
