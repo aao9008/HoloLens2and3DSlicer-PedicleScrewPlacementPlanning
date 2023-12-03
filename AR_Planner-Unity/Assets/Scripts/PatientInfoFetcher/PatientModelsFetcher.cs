@@ -8,33 +8,37 @@ public class PatientModelsFetcher : MonoBehaviour
 {
     public static string[] FetchPatientModels(string patientID)
     {
-        string modelsPath;
-        string[] patientModels; //This list will hold name of all model files in the PatientID folder
+        string modelsFolderPath; // This will hold path to a patients folder, each patient folder holds a patients OBJ models
+        string[] patientModelsArray; //This array will hold name of all model files in the PatientID folder
 
       
-        modelsPath = GetModelsPath(patientID);
+        modelsFolderPath = GetModelsPath(patientID); // Returns full path to patients folder (EX: Assets/Models/Patient 01)
 
-        patientModels = Directory.GetFiles(modelsPath, "*.obj");
-        patientModels = patientModels.Select(model => Path.GetFileNameWithoutExtension(model)).Distinct().ToArray();
-
-        foreach (string file in patientModels)
-        {
-            Debug.Log(file);
-            Debug.Log(patientModels.Length);
-        }
-
-        return patientModels;
+        patientModelsArray = Directory.GetFiles(modelsFolderPath, "*.obj");
+        patientModelsArray = patientModelsArray.Select(model => Path.GetFileNameWithoutExtension(model)).Distinct().ToArray();
+ 
+        return patientModelsArray;
     }
 
     internal static string GetModelsPath(string patientID)
     {
-        string modelsPath;
+        string modelsFolderPath;
         string modelsFolderName = patientID;
 
-        modelsPath = Path.Combine(PatientIDsFetcher.patientIDsPath, modelsFolderName);
+        modelsFolderPath = Path.Combine(PatientIDsFetcher.patientIDsPath, modelsFolderName);
 
-        Debug.Log(modelsPath);
+        return modelsFolderPath;
+    }
 
-        return modelsPath;
+    internal static string GetMTLPath(string patientID, string modelName)
+    {
+        string modelMTLPath;
+        string modelsFolderName = patientID;
+
+        modelMTLPath = Path.Combine(PatientIDsFetcher.patientIDsPath, modelsFolderName, modelName + ".mtl");
+
+        Debug.Log(modelMTLPath);
+
+        return modelMTLPath;
     }
 }

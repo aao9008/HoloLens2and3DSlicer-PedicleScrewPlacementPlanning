@@ -7,13 +7,12 @@ using System.IO;
 // Define the class PatientNumberFetcher
 public class PatientIDsFetcher : MonoBehaviour
 {
-    internal static string patientIDsPath = Path.Combine("Assets", "Resources", "Models", "SpineModels"); // File Path to patient folders
+    internal static string patientIDsPath = Path.Combine("Assets", "Resources", "Models", "SpineModels"); // File Path to where patient folders will be stored. 
 
     // Static method to fetch patient folder names 
     public static List<string> FetchPatientIDs()
     {
         List<string> patientIDs = new List<string>(); // This list will hold all patient files
-        
 
         // Search for folders in the patientIDs path, will return all folders in given path along with the children of these folders.
         string[] folderGUIDs = AssetDatabase.FindAssets("t:Folder", new string[] { patientIDsPath }); // Search Unity asset database for patientID folders
@@ -31,9 +30,6 @@ public class PatientIDsFetcher : MonoBehaviour
                 patientIDs.Add(folderName); // Add folder name to patientIDs list
             }
         }
-
-        
-       
 
         // Return completed list
         return patientIDs;
