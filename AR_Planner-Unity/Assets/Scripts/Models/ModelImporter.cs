@@ -6,6 +6,8 @@ using Microsoft.MixedReality.Toolkit.UI;
 
 public class ModelImporter : MonoBehaviour
 {
+    public static string parentModel;
+
     // This method is called to crate a prafab from an OBJ model
     public static void CreatePrefab(string patientID, string modelName)
     {
@@ -18,16 +20,18 @@ public class ModelImporter : MonoBehaviour
     {
         GameObject model = Resources.Load<GameObject>(Path.Combine("Models", "SpineModels", patientID , modelName));
 
-        GameObject importedObj = Instantiate(model, Vector3.zero, Quaternion.identity);
+        GameObject importedObj = Instantiate(model, Vector3.zero, Quaternion.identity); // Set model to origin coordinates ([0,0,0]) and set model with 0 roatation in any axis. 
 
-        float scaleFactor = .001f;
-        importedObj.transform.localScale = Vector3.one * scaleFactor;
+        float scaleFactor = .001f; // Unity standard UOM is meters and Slicer UOM is mm. 
+        importedObj.transform.localScale = Vector3.one * scaleFactor; // Scale model down form meters to mm
 
         BoxCollider boxCollider = importedObj.AddComponent<BoxCollider>();
 
-        AddTightBoxColliderToMeshObject(importedObj);
-        AddScriptsToPrefab(importedObj);
+        AddTightBoxColliderToMeshObject(importedObj); // Resize box collider to roughly the size of the model
+        AddScriptsToPrefab(importedObj); // Add necessary scripts to the model
+
         
+
 
         if (importedObj == null)
         {
@@ -42,12 +46,14 @@ public class ModelImporter : MonoBehaviour
     {
         string prefabPath = Path.Combine("Assets", "Resources", "Prefabs", "SpinePrefabs");
 
+        // Check if there is a folder for the patient in the spinePrefabs folder
         if (!Directory.Exists(Path.Combine(prefabPath, patientID)))
         {
+            // Create patient prefab folder if one does not exist
             AssetDatabase.CreateFolder(prefabPath, patientID);
         }
 
-        string prefabFilePath = Path.Combine(prefabPath, patientID, modelName + ".prefab");
+        string prefabFilePath = Path.Combine(prefabPath, patientID, modelName + ".prefab"); //This is the file path where newly constructed prefabs will be saved to. 
 
         bool prefabSuccess;
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(importedObj, prefabFilePath, out prefabSuccess);
@@ -61,9 +67,10 @@ public class ModelImporter : MonoBehaviour
             Debug.Log("Prefab failed to save");
         }
 
-        DestroyImmediate(importedObj);
+        DestroyImmediate(importedObj); // Removes model form hierarchy to keep scene view clean. 
     }
 
+    // Logic for sizing box collider to roughtly the size of the model it is attached to. 
     public static void AddTightBoxColliderToMeshObject(GameObject obj)
     {
         // Get or add a BoxCollider component to the GameObject
@@ -110,6 +117,7 @@ public class ModelImporter : MonoBehaviour
         }
     }
 
+    // Logic for adding necessary scripts to a model depending on if the model is the parent or a child model. 
     public static void AddScriptsToPrefab(GameObject prefab)
     {
         // Add ModelInfo script
@@ -118,6 +126,13 @@ public class ModelImporter : MonoBehaviour
         ObjectManipulator objectManipulatorScript = prefab.AddComponent<ObjectManipulator>();
 
         // Modify the TwoHandedManipulationType after adding the component
+        // If ExcludeScaleManipulation() method is not found, add it to the ObjectManipulator script in the SerializedFields section under the TwoHandedManipulationType transform flags declerations
+        /*
+            public void ExcludeScaleManipulation()
+            {
+                twoHandedManipulationType &= ~TransformFlags.Scale;
+            }
+        */
         if (objectManipulatorScript != null)
         {
             objectManipulatorScript.ExcludeScaleManipulation();
