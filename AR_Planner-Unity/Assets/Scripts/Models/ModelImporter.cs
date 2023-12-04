@@ -27,11 +27,8 @@ public class ModelImporter : MonoBehaviour
 
         BoxCollider boxCollider = importedObj.AddComponent<BoxCollider>();
 
-        AddTightBoxColliderToMeshObject(importedObj); // Resize box collider to roughly the size of the model
-        AddScriptsToPrefab(importedObj); // Add necessary scripts to the model
-
-        
-
+        AddTightBoxColliderToMeshObject(importedObj, modelName); // Resize box collider to roughly the size of the model
+        AddScriptsToPrefab(importedObj, modelName); // Add necessary scripts to the model
 
         if (importedObj == null)
         {
@@ -71,7 +68,7 @@ public class ModelImporter : MonoBehaviour
     }
 
     // Logic for sizing box collider to roughtly the size of the model it is attached to. 
-    public static void AddTightBoxColliderToMeshObject(GameObject obj)
+    public static void AddTightBoxColliderToMeshObject(GameObject obj, string modelName)
     {
         // Get or add a BoxCollider component to the GameObject
         BoxCollider boxCollider = obj.GetComponent<BoxCollider>();
@@ -115,14 +112,36 @@ public class ModelImporter : MonoBehaviour
                 boxCollider.size = size;
             }
         }
+
+        // If prefab is marked as parent 
+        if (modelName == parentModel)
+        {
+            // Double the height while maintaining the center position
+            Vector3 newSize = boxCollider.size;
+            newSize.y *= -2;
+            boxCollider.size = newSize;
+
+            //Adjust the center position to maintain the lower edge at the same position
+            Vector3 newCenter = boxCollider.center;
+            newCenter.y += newSize.y * 0.25f; // Adjust the center by half of the increased height
+            boxCollider.center = newCenter;
+        }
     }
 
     // Logic for adding necessary scripts to a model depending on if the model is the parent or a child model. 
-    public static void AddScriptsToPrefab(GameObject prefab)
+    public static void AddScriptsToPrefab(GameObject prefab, string modelName)
     {
         // Add ModelInfo script
         ModelInfo modelInfoScript = prefab.AddComponent<ModelInfo>();
         // Add ObjectManipulator script
+
+        // If current model is not the parent model
+        if (modelName != parentModel)
+        {
+            // Exit the function, child models do not need manipulation scripts. 
+            return;
+        }
+
         ObjectManipulator objectManipulatorScript = prefab.AddComponent<ObjectManipulator>();
 
         // Modify the TwoHandedManipulationType after adding the component
@@ -133,11 +152,10 @@ public class ModelImporter : MonoBehaviour
                 twoHandedManipulationType &= ~TransformFlags.Scale;
             }
         */
-        if (objectManipulatorScript != null)
-        {
-            objectManipulatorScript.ExcludeScaleManipulation();
-        }
-
+        
+        // Remove ability for user to scale models with both hands. 
+        objectManipulatorScript.ExcludeScaleManipulation();
+ 
         // Add NearInteractionGrabbable script
         NearInteractionGrabbable nearInteractionGrabbableScript = prefab.AddComponent<NearInteractionGrabbable>();
     }
