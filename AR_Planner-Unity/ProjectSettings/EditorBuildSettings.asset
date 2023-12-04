@@ -4,7 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/PedicleScrews.unity
+    guid: 451514841ddc34a4589983d24c94e28a
   m_configObjects:
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 41f73befdb84d6042bb16166795a244c, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: b0ddc82f3da2af84ba4336dd5e6dc76d, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 530ee5c3d9517154c959f3fff380c18c, type: 2}

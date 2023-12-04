@@ -496,7 +496,7 @@ public class PressableButtons : MonoBehaviour
         // Apply the required transform to the new model
         (screw_MI._gameObject).transform.localPosition = localPosition;
         (screw_MI._gameObject).transform.localRotation = Quaternion.Euler(localRotation);
-        (screw_MI._gameObject).transform.localScale = spineGO.transform.localScale;
+        //(screw_MI._gameObject).transform.localScale = spineGO.transform.localScale;
 
         // Make the object manipulable
         ModifyScrew(screw_MI._gameObject, true);

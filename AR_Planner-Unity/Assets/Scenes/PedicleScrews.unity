@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2139,8 +2139,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772716403}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0852, y: 0, z: 0.5}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.0159, y: 0, z: 0.1058}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2173,7 +2173,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d3545e5108da0249904d0cae805a80d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patientNumber: 1
+  patientIDs:
+  - Patient Art
+  - Patient Lasso
+  - Patient Milsom
+  - Patient Pua
+  - Patient Vahan
+  patientID: Patient Milsom
+  patientModels:
+  - bowelsAndBones
+  - skin_2
+  - trajectoryAndTarget
+  parentModel: skin_2
+  target_models:
+  - trajectoryAndTarget
+  modelList: []
   screwSelected: 0
 --- !u!1001 &782319060
 PrefabInstance:
