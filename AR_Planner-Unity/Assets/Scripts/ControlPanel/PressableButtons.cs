@@ -30,17 +30,19 @@ public class PressableButtons : MonoBehaviour
     List<ModelInfo> infoToSendArray; // Array of elements that will be sent to 3D Slicer. In our case, the Spine, the image plane and all the screws
     public List<string> patientIDs; // Array of names of patient folders. These folders hold all models for a given patient.
     public string patientID; // Folder name of the patient of interest. This folder name/patient identifier is used to automatically load the models of interest. 
-    public string[] patientModels;
-    public string parentModel;
-    public List<GameObject> modelList = new List<GameObject>();
-
-
-    /// SPINE INFORMATION ///
+    
+    /// Parent Model Information ///
     GameObject spineModel; // Model of the spine corresponding to the patient "patientNumber"
     Material spine_mat; // Material associated to the spine model
     Material clipping_mat; // Material with the clipping property
     Color fixSpineColor; // Color of the spine when it's fixed in the 3D world
     Color mobileSpineColor; // Color of the spine when it can be moved in the 3D world
+
+    /// Model Information /// 
+    public string[] patientModels; // List of maodel names within a patients folder
+    public string parentModel; // Name of the model which will hold all other additonal child models
+    public List<string> target_models; // Name of the model that repersents the region of interest. 
+    public List<GameObject> modelList = new List<GameObject>(); // Reference to all child models
 
     /// SCREWS INFORMATION ///
     Material screwMobile_mat; // Material of the screw when it can be moved in the 3D world
@@ -75,30 +77,8 @@ public class PressableButtons : MonoBehaviour
         spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
 
 
-        //////////////// Process for creating child models ///////////////////////////        
-        foreach (string model in patientModels)
-        {
-            if (model == parentModel)
-            {
-                continue;
-            }
-
-            GameObject childModel = CreateChildModel(model);
-
-           
-
-            if (MTLPresent(childModel.name))
-            {
-                FormatMTLMat(childModel);
-            }
-            else
-            {
-                AssignDefaultMat(childModel);
-            }
-           
-            modelList.Add(childModel);
-        }
-        //////////////////////// End of child model creation process///////////////////
+        //Process for creating child models
+        CreateChildModels();
 
         // Intantiate the image body within the spine model
         string imageModelPath = Path.Combine("Prefabs", "ImagePrefab", "MobileCTPlane"); // Path to the image prefab
@@ -172,6 +152,33 @@ public class PressableButtons : MonoBehaviour
 
     ///////////////////////////////// Child Model Creation Logic////////////////////
     
+    // This function creates all child models
+    public void CreateChildModels()
+    {
+        foreach (string model in patientModels)
+        {
+            if (model == parentModel)
+            {
+                continue;
+            }
+
+            GameObject childModel = CreateChildModel(model);
+
+
+
+            if (MTLPresent(childModel.name))
+            {
+                FormatMTLMat(childModel);
+            }
+            else
+            {
+                AssignDefaultMat(childModel);
+            }
+
+            modelList.Add(childModel);
+        }
+    }
+    
     // This function creates a child model 
     public GameObject CreateChildModel(string model)
     {
@@ -214,6 +221,12 @@ public class PressableButtons : MonoBehaviour
     // This function is called when OBJ model has an associated MTL file
     public void FormatMTLMat(GameObject childModel)
     {
+        // If the model is marked as a target, no need to make the model transparent
+        if (target_models.Contains(childModel.name))
+        {
+            return;
+        }
+
         Material mtl_mat = childModel.GetComponentInChildren<MeshRenderer>().material;
         Color mtlColor = mtl_mat.color;
 
@@ -236,10 +249,19 @@ public class PressableButtons : MonoBehaviour
     public void AssignDefaultMat(GameObject childModel)
     {
         Material anatomy_mat;
-        
-        //Material associated to the spine model                     
-        anatomy_mat = Resources.Load("Materials/Anatomy_mat") as Material;                     
-        childModel.GetComponentInChildren<MeshRenderer>().material = anatomy_mat;
+        Material target_mat;
+
+        if (target_models.Contains(childModel.name))
+        {
+            target_mat = Resources.Load("Materials/Targets_mat") as Material;
+            childModel.GetComponentInChildren<MeshRenderer>().material = target_mat;
+        }
+        else
+        {
+            //Material associated to the spine model                     
+            anatomy_mat = Resources.Load("Materials/Anatomy_mat") as Material;
+            childModel.GetComponentInChildren<MeshRenderer>().material = anatomy_mat;
+        }   
     }
 
     ////////////////////////////////// WIDGET //////////////////////////////////////
@@ -261,6 +283,7 @@ public class PressableButtons : MonoBehaviour
         catch{}    
         // Create the new screw
         ModelInfo screwMI = CreateScrew(numberOfScrews + 1, modelsParentTransform, spineModel, localPosition, localRotation);
+
         // Highlight the new screw to mark it as "selected"
         screwSelected = screwMI._number;
         screwSelected_label.text =  "Screw " + screwMI._number + ":\nD" + screwMI._diameter + "L" + screwMI._length;
