@@ -37,8 +37,6 @@ public class PatientModelsFetcher : MonoBehaviour
 
         modelMTLPath = Path.Combine(PatientIDsFetcher.patientIDsPath, modelsFolderName, modelName + ".mtl");
 
-        Debug.Log(modelMTLPath);
-
         return modelMTLPath;
     }
 }
