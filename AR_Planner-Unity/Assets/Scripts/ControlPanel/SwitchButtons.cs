@@ -1,4 +1,4 @@
-// This code was developed by Alicia Pose Díez de la Lastra, from Universidad Carlos III de Madrid
+    // This code was developed by Alicia Pose Díez de la Lastra, from Universidad Carlos III de Madrid
 // This script creates all the functions associated to the switch buttons in the ControlPanel
 
 // First, import some libraries of interest
@@ -104,13 +104,14 @@ public class SwitchButtons : MonoBehaviour
         clipSpine_Switch.IsToggled = false;
         clipSpine_Switch.IsEnabled = false;
 
-
         /// SPINE VISIBILITY ///
         // Get the switch button in the hierarchy and define two functions to be executed when it is selected and when it is deselected
         spineVisibility_Switch = GameObject.Find("ControlPanel").transform.Find("SpineButtons").transform.Find("ButtonCollection").transform.Find("SpineVisibilitySwitch").GetComponent<Interactable>();
+        spine_mat = Resources.Load("Materials/Spine_mat") as Material; // Load the material of interest from the path
         var toggleSpineVisibility = spineVisibility_Switch.AddReceiver<InteractableOnToggleReceiver>();
         toggleSpineVisibility.OnSelect.AddListener(() => OnTurnModelON(spineVisibility_Switch));
         toggleSpineVisibility.OnDeselect.AddListener(() => OnTurnModelOFF(spineVisibility_Switch));
+
         
         spineVisibility_SwitchGO = spineVisibility_Switch.gameObject;
         // Change the label to ON (the spine is visible)
@@ -236,7 +237,7 @@ public class SwitchButtons : MonoBehaviour
     void OnTurnModelOFF(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the non-visible material to the spine
-        visible_mat = spineModel.GetComponentInChildren<MeshRenderer>().material; // the visible material could be spine_mat or clipping_mat
+        visible_mat = spine_mat; // the visible material could be spine_mat or clipping_mat
         spineModel.GetComponentInChildren<MeshRenderer>().material = invisible_mat;
         // Update the button label
         spineVisibility_label.text = "Spine OFF";
