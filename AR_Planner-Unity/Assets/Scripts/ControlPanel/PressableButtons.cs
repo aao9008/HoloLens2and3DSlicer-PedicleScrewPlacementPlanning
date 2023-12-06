@@ -55,7 +55,12 @@ public class PressableButtons : MonoBehaviour
     int lengthIndex; // Index of the length selected in the array. It iterates over all the elements in lengthsArray
     string screwPrefabsPath; // Path to the screw prefabs
 
-    
+    // Define a delegate type for the callback
+    public delegate void ModelListReadyCallback();
+
+    // Define an event using the delegate
+    public static event ModelListReadyCallback ModelListReady;
+
     ////////////////////////////////// START //////////////////////////////////////
     void Start()
     {
@@ -65,6 +70,7 @@ public class PressableButtons : MonoBehaviour
 
         // Identify the modelsParentTransform in the scene
         modelsParentTransform = GameObject.Find("Models").transform; // Identify the modelsParentTransform in the scene
+       
 
         // Instantiate the spine model corresponding to the patient of interest
         string spineModelName = parentModel; // Spine filename
@@ -177,8 +183,28 @@ public class PressableButtons : MonoBehaviour
 
             modelList.Add(childModel);
         }
+
+        // Populate your model list...
+        // When the list is ready, invoke the callback
+        InvokeModelListReady();
     }
-    
+
+    // Method to invoke the callback when the model list is ready
+    void InvokeModelListReady()
+    {
+        Debug.Log("invoke called");
+
+        // Check if anyone is subscribed to the event
+        if (ModelListReady != null)
+        {
+            ModelListReady.Invoke();
+        }
+        else
+        {
+            Debug.Log("No subscribers to OnModelListReady event");
+        }
+    }
+
     // This function creates a child model 
     public GameObject CreateChildModel(string model)
     {
@@ -205,12 +231,12 @@ public class PressableButtons : MonoBehaviour
     public bool MTLPresent(string modelName)
     {
         //Get the path of the MTL file associated witht the model
-        string mtlPath = PatientModelsFetcher.GetMTLPath(patientID, modelName);
+        string mtlPath = PatientModelsFetcher.GetMTLPath(patientID, modelName); 
 
         // Check if the MTL file exists at the specified path
         if (File.Exists(mtlPath))
         {
-            Debug.Log("success mtl found");
+            Debug.Log("success MTL found");
             return true; // Return true indicating the MTL file exists
         }
 
