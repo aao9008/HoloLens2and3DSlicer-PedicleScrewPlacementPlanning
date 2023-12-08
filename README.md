@@ -1,7 +1,9 @@
-# Real-Time open-source integration between Microsoft HoloLens 2 and 3D Slicer
-## Application for pedicle screw placement planning
+# Real-Time integration between Microsoft HoloLens 2 and 3D Slicer
+## Demonstration in pedicle screw placement planning
 
-This repository has been created by Alicia Pose Díez de la Lastra, from Universidad Carlos III de Madrid. It presents a novel approach to communicate Microsoft HoloLens 2 and 3D Slicer using OpenIGTLink. This connection is applied towards pedicle screw placement planning. Here you will find all the necessary information and resources to run the system in your computer. We present two planning methods for the abovementioned clinical procedure:
+This repository has been created by Alicia Pose Díez de la Lastra, from Universidad Carlos III de Madrid. It presents a novel approach to communicate Microsoft HoloLens 2 and 3D Slicer using OpenIGTLink. This connection is applied towards pedicle screw placement planning. Here is a [video demonstration](https://www.youtube.com/watch?v=35WiSceP94Q&t=1s) of the functioning of the application. 
+
+In this repository you will find all the necessary information and resources to run the system in your computer. We present two planning methods for the abovementioned clinical procedure:
 
  - AR method: It couples Microsoft HoloLens 2 to 3D Slicer using OpenIGTLink communication protocol. In the final application, a user can move a plane along a virtual 3D model of a patient’s spine and display the corresponding resliced 2D image from the CT.
 
@@ -37,7 +39,15 @@ For more information, read the README.md file within each folder.
  - For further questions, please contact apose@ing.uc3m.es
 
 ## Citation
-This repository will complement a paper that is currently under revision for publication. When it's accepted, the corresponding citation will be updated here. If you find this useful, we kindly ask that you return to this page to check for the updated citation and cite our work in any related publications.
+This repository complements the paper: 
+
+- Title: **Real-time integration between Microsoft HoloLens 2 and 3D Slicer with demonstration in pedicle screw placement planning**
+- Authors: **Alicia Pose-Díez-de-la-Lastra, Tamas Ungi, David Morton, Gabor Fichtinger, and Javier Pascau.**
+- Published at: **International Journal of Computer-Assisted Radiology and Surgery (IJCARS)**
+- Date of publication: June 2023
+- Reference: https://doi.org/10.1007/s11548-023-02977-0
+
+If you find it useful, please consider citing us.
 
 
 ## Aknowledgements
