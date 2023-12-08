@@ -3,13 +3,74 @@ using UnityEngine;
 using UnityEditor;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI;
+using Siccity.GLTFUtility;
+using System.Collections.Generic;
 
 public class ModelImporter : MonoBehaviour
 {
     public static string parentModel;
 
+    public static void CreatePrefabsFromOBJ(string patientID, string[] modelsList)
+    {
+        // Iterate over models list and crate a prefab
+        foreach (string model in modelsList)
+        {
+            CreatePrefabFromOBJ(patientID, model);
+        }
+    }
+
+    public static List<GameObject> CreatePrefabsFromGLTF(string patientID, string gltfPath)
+    {
+        List <GameObject> models = new List<GameObject>();
+
+        GameObject parent = Importer.LoadFromFile(gltfPath); // This parent game object may hold one or many meshes.
+
+        Transform parentTransform = parent.transform;
+
+        int count = parentTransform.childCount;
+
+        for(int i = parentTransform.childCount - 1; i >= 0; i--)
+        {
+            Transform child = parentTransform.GetChild(i);
+
+            string modelName = child.name;
+
+            // Create a new parent GameObject with the name of the child
+            GameObject newParent = new GameObject(child.name);
+            // Set the newParent's position and rotation to match the child
+            newParent.transform.SetPositionAndRotation(child.position, child.rotation);
+
+            // Set the child's name to "grp1"
+            child.gameObject.name = "grp1";
+            child.SetParent(newParent.transform);
+
+            child.localScale = Vector3.one;
+
+            // Instantiate a prefab as a child of the new parent GameObject
+            GameObject newPrefab = Instantiate(newParent, Vector3.zero, Quaternion.identity);
+
+            BoxCollider boxCollider = newPrefab.AddComponent<BoxCollider>();
+
+            AddTightBoxColliderToMeshObject(newPrefab, modelName); // Resize box collider to roughly the size of the model
+            AddScriptsToPrefab(newPrefab, modelName); // Add necessary scripts to the model
+
+            newPrefab.transform.localScale = Vector3.one * 0.001f; // Set scale to 0.001
+
+            newPrefab.name = modelName; // Set name to modelName
+
+
+            models.Add(newPrefab);
+
+            DestroyImmediate(newParent);
+            
+        }
+        DestroyImmediate(parent);
+
+        return models; 
+    }
+
     // This method is called to crate a prafab from an OBJ model
-    public static void CreatePrefab(string patientID, string modelName)
+    public static void CreatePrefabFromOBJ(string patientID, string modelName)
     {
         GameObject importedObj = ImportObj(patientID, modelName);
         SavePrefab(importedObj, patientID, modelName);
