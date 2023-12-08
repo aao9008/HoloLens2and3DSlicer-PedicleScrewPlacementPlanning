@@ -212,6 +212,12 @@ public class PressableButtonsEditor : Editor
         string patientID = script.patientID;
         string[] patientModels = script.patientModels;
         string prefabFolderPath = Path.Combine("Assets", "Resources", "Prefabs", "SpinePrefabs", patientID);
+        string modelFolderPath;
+
+        //Clear the list
+        script.gltfModels.Clear();
+
+        Debug.Log(script.gltfModels.Count);
 
         // If not patietn is selected, notify the user
         if (patientID == null)
@@ -230,10 +236,18 @@ public class PressableButtonsEditor : Editor
         // Delete old prefabs
         DeleteOldPrefabs(prefabFolderPath);
 
-        // Iterate over models list and crate a prefab
-        foreach(string model in patientModels)
+        // Are models form OBJ or GLTF file?
+        modelFolderPath = PatientModelsFetcher.GetModelsPath(patientID);
+
+        string[] files = Directory.GetFiles(modelFolderPath, "*.gltf");
+
+        if (files.Length > 0)
         {
-            ModelImporter.CreatePrefab(patientID, model);
+            script.gltfModels = ModelImporter.CreatePrefabsFromGLTF(patientID, files[0]);
+        }
+        else
+        {
+            ModelImporter.CreatePrefabsFromOBJ(patientID, patientModels);
         }
 
         EditorUtility.DisplayDialog("Prefab Creation", "Prefabs have been successfully created!", "OK");
@@ -258,7 +272,7 @@ public class PressableButtonsEditor : Editor
                 Debug.Log("Old Prefabs have been deleted");
             }
 
-            AssetDatabase.Refresh();
+            //AssetDatabase.Refresh();
 
         }
     }
