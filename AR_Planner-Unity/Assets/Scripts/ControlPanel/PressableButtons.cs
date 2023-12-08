@@ -43,6 +43,7 @@ public class PressableButtons : MonoBehaviour
     public string parentModel; // Name of the model which will hold all other additonal child models
     public List<string> target_models; // Name of the model that repersents the region of interest. 
     public List<GameObject> modelList = new List<GameObject>(); // Reference to all child models
+    public List<GameObject> gltfModels = new List<GameObject>(); // This list will hold references to all GLTF models. 
 
     /// SCREWS INFORMATION ///
     Material screwMobile_mat; // Material of the screw when it can be moved in the 3D world
@@ -70,21 +71,50 @@ public class PressableButtons : MonoBehaviour
 
         // Identify the modelsParentTransform in the scene
         modelsParentTransform = GameObject.Find("Models").transform; // Identify the modelsParentTransform in the scene
-       
 
-        // Instantiate the spine model corresponding to the patient of interest
-        string spineModelName = parentModel; // Spine filename
-        string spineModelPath = Path.Combine("Prefabs", "SpinePrefabs", patientID, parentModel); // Path to the spine prefab
-        GameObject spineItem = Resources.Load(spineModelPath) as GameObject; // Load the spine Model
-        spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
-        spineModel.name = spineModelName; // Change the spine model name to spineModelName
-        spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
-        //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
-        spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
+        Debug.Log(gltfModels.Count);
 
+        if (gltfModels.Count < 1)
+        {
+            Debug.Log("I made it to the correct obj path");
+            // Instantiate the spine model corresponding to the patient of interest
+            string spineModelName = parentModel; // Spine filename
+            string spineModelPath = Path.Combine("Prefabs", "SpinePrefabs", patientID, parentModel); // Path to the spine prefab
+            GameObject spineItem = Resources.Load(spineModelPath) as GameObject; // Load the spine Model
+            spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
+            spineModel.name = spineModelName; // Change the spine model name to spineModelName
+            spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
+            //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+            spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
 
-        //Process for creating child models
-        CreateChildModels();
+            CreateChildOBJModels();
+        }
+        else if (gltfModels.Count > 1)
+        {
+            GameObject parentObject = null; // Assign a default value
+            foreach (GameObject model in gltfModels)
+            {
+                if (model.name == parentModel)
+                {
+                    parentObject = model;
+                    break; // Exit the loop once the object is found
+                }
+            }
+
+            // Instantiate the spine model corresponding to the patient of interest
+            GameObject spineItem = parentObject;
+
+            Debug.Log(spineItem.name);
+
+            string spineModelName = parentObject.name; // Spine filename
+            spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
+            spineModel.name = spineModelName; // Change the spine model name to spineModelName
+            spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
+                                                               //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+            spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by defaultn
+
+            CreateChildGLTFModels();
+        }
 
         // Intantiate the image body within the spine model
         string imageModelPath = Path.Combine("Prefabs", "ImagePrefab", "MobileCTPlane"); // Path to the image prefab
@@ -157,9 +187,53 @@ public class PressableButtons : MonoBehaviour
     }
 
     ///////////////////////////////// Child Model Creation Logic////////////////////
-    
-    // This function creates all child models
-    public void CreateChildModels()
+    public void CreateChildGLTFModels()
+    {
+        foreach (GameObject model in gltfModels)
+        {
+            // Do not create parentModel as a child
+            if (model.name == parentModel)
+            {
+                Destroy(GameObject.Find(model.name));
+                continue;
+            }
+
+            GameObject childModel = CreatChildGLTFModel(model); // Create instance of childModel from the GLTF reference
+
+            FormatMat(childModel);
+
+            modelList.Add(childModel); // Add new instatniated model to modelsList for voice command functionality
+            Destroy(GameObject.Find(model.name)); // Remove GLTF refernce from hierarchy
+        }
+
+        // Populate your model list...
+        // When the list is ready, invoke the callback
+        InvokeModelListReady();
+    }
+
+    // This function creates a child model from GLTF file
+    public GameObject CreatChildGLTFModel(GameObject model)
+    {
+        GameObject childModel; // Model of the spine corresponding to the patient "patientNumber"
+
+        string childModelName = model.name; // Child model filename
+        childModel = GameObject.Instantiate(model, spineModel.transform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
+        childModel.name = childModelName; // Change the spine model name to spineModelName
+        childModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
+        childModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+
+        // Reset the child model's local scale to (1, 1, 1)
+        // When objects are nested in Unity, their transformations are relative to their parent.
+        // If the parent (spineModel) has a scale different from (1, 1, 1), it impacts the child's size.
+        // For instance, if a child object is scaled by 0.001 and then nested under a parent object scaled by .001, the overall size becomes the product of these scales.
+        childModel.transform.localScale = Vector3.one;
+
+        return childModel;
+    }
+
+
+    // This function creates all child models from OBJ files
+    public void CreateChildOBJModels()
     {
         foreach (string model in patientModels)
         {
@@ -168,13 +242,13 @@ public class PressableButtons : MonoBehaviour
                 continue;
             }
 
-            GameObject childModel = CreateChildModel(model);
+            GameObject childModel = CreatChildOBJModel(model);
 
 
 
             if (MTLPresent(childModel.name))
             {
-                FormatMTLMat(childModel);
+                FormatMat(childModel);
             }
             else
             {
@@ -206,7 +280,7 @@ public class PressableButtons : MonoBehaviour
     }
 
     // This function creates a child model 
-    public GameObject CreateChildModel(string model)
+    public GameObject CreatChildOBJModel(string model)
     {
         GameObject childModel; // Model of the spine corresponding to the patient "patientNumber"
 
@@ -236,7 +310,7 @@ public class PressableButtons : MonoBehaviour
         // Check if the MTL file exists at the specified path
         if (File.Exists(mtlPath))
         {
-            Debug.Log("success MTL found");
+            
             return true; // Return true indicating the MTL file exists
         }
 
@@ -245,16 +319,24 @@ public class PressableButtons : MonoBehaviour
     }
 
     // This function is called when OBJ model has an associated MTL file
-    public void FormatMTLMat(GameObject childModel)
+    public void FormatMat(GameObject childModel)
     {
-        // If the model is marked as a target, no need to make the model transparent
-        if (target_models.Contains(childModel.name))
-        {
-            return;
-        }
-
         Material mtl_mat = childModel.GetComponentInChildren<MeshRenderer>().material;
         Color mtlColor = mtl_mat.color;
+
+        // If the model is marked as a target, no need to make the model transparent, just copy the MTL color onto a Unity mat asset.
+        if (target_models.Contains(childModel.name))
+        {
+            Material reference_mat = Resources.Load("Materials/Targets_mat") as Material;
+
+            Material new_mat = new Material(reference_mat);
+
+            new_mat.color = mtlColor;
+
+            childModel.GetComponentInChildren<MeshRenderer>().material = new_mat;
+
+            return;
+        }
 
         // Load the custom material, this material has all transparency settings preset. 
         Material child_mat = Resources.Load("Materials/Child_mat") as Material;
@@ -726,5 +808,9 @@ public class PressableButtons : MonoBehaviour
             screwGO.GetComponentInChildren<MeshRenderer>().material.DisableKeyword("_EMISSION");
         }
     }
-    
+
+    void OnApplicationQuit()
+    {
+        gltfModels.Clear();
+    }
 }
