@@ -36,7 +36,7 @@ public class PatientModelsFetcher : MonoBehaviour
         return patientModelsArray;
     }
 
-    internal static string GetModelsPath(string patientID)
+    public static string GetModelsPath(string patientID)
     {
         string modelsFolderPath;
         string modelsFolderName = patientID;
