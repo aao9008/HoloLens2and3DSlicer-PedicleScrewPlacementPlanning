@@ -229,6 +229,7 @@ public class SwitchButtons : MonoBehaviour
     {
         // Assign the visible material to the spine
         //spineModel.GetComponentInChildren<MeshRenderer>().material = visible_mat;
+        spineModel.GetComponentInChildren <MeshRenderer>().material = spine_mat;
         spineModel.GetComponentInChildren<MeshRenderer>().enabled = true;
         // Update the button label
         //spineVisibility_label.text = "Skin ON";
