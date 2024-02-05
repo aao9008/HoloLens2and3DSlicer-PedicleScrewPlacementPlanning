@@ -54,7 +54,8 @@ public class ModelToggle : MonoBehaviour
 
     void PopuluateDictionaryAndKeywords()
     {
-        models = pressableButtons.modelList; // This list is a reference to all child models. 
+        models = pressableButtons.modelList; // This list is a reference to all child models.
+      
 
         foreach (GameObject model in models)
         {
@@ -73,6 +74,11 @@ public class ModelToggle : MonoBehaviour
 
     void StartRecognizer(string[] keywords)
     {
+        if (keywords.Length < 1)
+        {
+            return;
+        }
+        
         // Initalize KeywordRecognizer
         keywordRecognizer = new KeywordRecognizer(keywords);
 
