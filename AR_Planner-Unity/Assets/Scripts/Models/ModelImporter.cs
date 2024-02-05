@@ -9,9 +9,32 @@ using System.Collections.Generic;
 public class ModelImporter : MonoBehaviour
 {
     public static string parentModel;
+    public PressableButtons pressableButtonsScript;
+
+    
+    void Start()
+    {
+        // Find the "Models" GameObject
+        GameObject modelsObject = GameObject.Find("Models");
+
+        if (modelsObject == null) {
+            Debug.Log("Models object is null!");
+        }
+
+        // Get the PressableButtons script form the "Models" GameObject
+        pressableButtonsScript = modelsObject.GetComponent<PressableButtons>();
+
+        // Access Parent model variable in the PressableButtons script
+        parentModel = pressableButtonsScript.parentModel;
+
+        Debug.Log("Test 117, Parent Model is: " + parentModel);
+    }
+    
 
     public static void CreatePrefabsFromOBJ(string patientID, string[] modelsList)
     {
+        
+
         // Iterate over models list and crate a prefab
         foreach (string model in modelsList)
         {
@@ -21,6 +44,7 @@ public class ModelImporter : MonoBehaviour
 
     public static List<GameObject> CreatePrefabsFromGLTF(string patientID, string gltfPath)
     {
+
         List <GameObject> models = new List<GameObject>();
 
         GameObject parent = Importer.LoadFromFile(gltfPath); // This parent game object may hold one or many meshes.
@@ -52,6 +76,9 @@ public class ModelImporter : MonoBehaviour
             BoxCollider boxCollider = newPrefab.AddComponent<BoxCollider>();
 
             AddTightBoxColliderToMeshObject(newPrefab, modelName); // Resize box collider to roughly the size of the model
+
+            Debug.Log("Hi from model importer. The parent model is: " + parentModel);
+
             AddScriptsToPrefab(newPrefab, modelName); // Add necessary scripts to the model
 
             newPrefab.transform.localScale = Vector3.one * 0.001f; // Set scale to 0.001
@@ -89,6 +116,9 @@ public class ModelImporter : MonoBehaviour
         BoxCollider boxCollider = importedObj.AddComponent<BoxCollider>();
 
         AddTightBoxColliderToMeshObject(importedObj, modelName); // Resize box collider to roughly the size of the model
+
+        Debug.Log("Hi from model importer. The parent model is: " + parentModel);
+
         AddScriptsToPrefab(importedObj, modelName); // Add necessary scripts to the model
 
         if (importedObj == null)

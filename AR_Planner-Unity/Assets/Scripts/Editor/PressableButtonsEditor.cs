@@ -93,6 +93,7 @@ public class PressableButtonsEditor : Editor
     private void ParentModelMenu(PressableButtons script)
     {
         EditorGUILayout.LabelField("Select Parent Model", EditorStyles.boldLabel);
+
         // Display a button in the Inspector to trigger the method
         if (GUILayout.Button(new GUIContent("Refresh Model List", "Selected model will be used for land marking")))
         {
@@ -243,7 +244,8 @@ public class PressableButtonsEditor : Editor
 
         if (files.Length > 0)
         {
-            script.gltfModels = ModelImporter.CreatePrefabsFromGLTF(patientID, files[0]);
+            //script.gltfModels = ModelImporter.CreatePrefabsFromGLTF(patientID, files[0]);
+            Debug.Log("Will create prefab at runtime.");
         }
         else
         {
