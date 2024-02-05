@@ -72,9 +72,15 @@ public class PressableButtons : MonoBehaviour
         // Identify the modelsParentTransform in the scene
         modelsParentTransform = GameObject.Find("Models").transform; // Identify the modelsParentTransform in the scene
 
-        Debug.Log(gltfModels.Count);
+        /////
+        string modelFolderPath;
+        modelFolderPath = PatientModelsFetcher.GetModelsPath(patientID);
+        string[] files = Directory.GetFiles(modelFolderPath, "*.gltf");
+        /////
 
-        if (gltfModels.Count < 1)
+        Debug.Log("Boom, Parent model is: " + parentModel);
+        
+        if (files.Length < 1)
         {
             Debug.Log("I made it to the correct obj path");
             // Instantiate the spine model corresponding to the patient of interest
@@ -89,13 +95,18 @@ public class PressableButtons : MonoBehaviour
 
             CreateChildOBJModels();
         }
-        else if (gltfModels.Count > 1)
+        else if (files.Length > 0)
         {
+            gltfModels = ModelImporter.CreatePrefabsFromGLTF(patientID, files[0]);
+
+            Debug.Log("Im here:" + patientID + modelFolderPath);
+
             GameObject parentObject = null; // Assign a default value
             foreach (GameObject model in gltfModels)
             {
                 if (model.name == parentModel)
                 {
+                    Debug.Log("Model name is " + model.name + " Parentmodel name is " + parentModel);
                     parentObject = model;
                     break; // Exit the loop once the object is found
                 }
@@ -110,9 +121,10 @@ public class PressableButtons : MonoBehaviour
             spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
             spineModel.name = spineModelName; // Change the spine model name to spineModelName
             spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
-                                                               //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+          //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
             spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by defaultn
 
+            Debug.Log("I'm the spine model and my name is: " + spineModel.name);
             CreateChildGLTFModels();
         }
 
@@ -140,15 +152,6 @@ public class PressableButtons : MonoBehaviour
         //// Also set the clipping plane color to mobile
         clipping_mat = Resources.Load("Materials/Clipping_mat") as Material; // Load the material of interest from the path
         clipping_mat.SetColor("_Color", mobileSpineColor); // Align the color of clipping_mat with the color of the spine (mobileSpineColor in this case) 
-
-
-        // Initialize the spine colors that will indicate if its mobile or not
-        anatomy_mat = Resources.Load("Materials/Anatomy_mat") as Material;
-        anatomyModel.GetComponentInChildren<MeshRenderer>().material = anatomy_mat;
-
-        targets_mat = Resources.Load("Materials/Targets_mat") as Material;
-        targetsModel.GetComponentInChildren<MeshRenderer>().material = targets_mat;
-
 
         // Initialize the screw variables
         screwSelected = 0;
