@@ -163,21 +163,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoConstraintSelection: 1
   selectedConstraints: []
---- !u!114 &4865437892386547905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8867532885381637031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b38dcbf564b851d4db475b8c83019b36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _name: Spine
-  _number: 0
-  _color: 2
-  _diameter: 2
-  _length: 2
-  _gameObject: {fileID: 8867532885381637031}

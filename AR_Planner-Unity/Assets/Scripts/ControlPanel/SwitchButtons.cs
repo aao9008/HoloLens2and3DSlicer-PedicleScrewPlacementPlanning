@@ -51,6 +51,8 @@ public class SwitchButtons : MonoBehaviour
     TextMeshPro spineVisibility_label; // Label bellow the switch button that indicates if the spine visible
     Material visible_mat; // Material of the spine when it is visible
     Material invisible_mat; // Material of the spine when it is not visible
+    MeshRenderer spineModelMesh;
+  
 
 
     /// SHOW IMAGE ///
@@ -229,8 +231,10 @@ public class SwitchButtons : MonoBehaviour
     {
         // Assign the visible material to the spine
         //spineModel.GetComponentInChildren<MeshRenderer>().material = visible_mat;
-        spineModel.GetComponentInChildren <MeshRenderer>().material = spine_mat;
-        spineModel.GetComponentInChildren<MeshRenderer>().enabled = true;
+        //spineModel.GetComponentInChildren <MeshRenderer>().material = spine_mat;
+        //spineModel.GetComponentInChildren<MeshRenderer>().enabled = true;
+        spineModelMesh = spineModel.GetComponentInChildren<MeshRenderer>();
+        spineModelMesh.enabled = true;
         // Update the button label
         //spineVisibility_label.text = "Skin ON";
     }
@@ -240,7 +244,9 @@ public class SwitchButtons : MonoBehaviour
     {
         // Assign the non-visible material to the spine
         visible_mat = spine_mat; // the visible material could be spine_mat or clipping_mat
-        spineModel.GetComponentInChildren<MeshRenderer>().material = invisible_mat;
+        //spineModel.GetComponentInChildren<MeshRenderer>().material = invisible_mat;
+        spineModelMesh = spineModel.GetComponentInChildren<MeshRenderer>();
+        spineModelMesh.enabled = false;
         // Update the button label
         //spineVisibility_label.text = "Skin OFF";
     }

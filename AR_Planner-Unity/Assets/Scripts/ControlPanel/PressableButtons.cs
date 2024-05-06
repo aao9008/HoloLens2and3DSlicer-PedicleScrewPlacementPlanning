@@ -33,7 +33,8 @@ public class PressableButtons : MonoBehaviour
     
     /// Parent Model Information ///
     GameObject spineModel; // Model of the spine corresponding to the patient "patientNumber"
-    Material spine_mat; // Material associated to the spine model
+    Material mobile_spine_mat; // Material associated to the spine model
+    Material fixed_spine_mat;
     Material clipping_mat; // Material with the clipping property
     Color fixSpineColor; // Color of the spine when it's fixed in the 3D world
     Color mobileSpineColor; // Color of the spine when it can be moved in the 3D world
@@ -143,12 +144,13 @@ public class PressableButtons : MonoBehaviour
         
 
         // Initialize the spine colors that will indicate if its mobile or not
-        spine_mat = Resources.Load("Materials/Spine_mat") as Material; // Load the material of interest from the path
+        mobile_spine_mat = Resources.Load("Materials/Spine_mat") as Material; // Load the material of interest from the path
+        fixed_spine_mat = Resources.Load("Materials/Spine_mat_fixed") as Material;
         fixSpineColor = new Color(0.8f, 0.8f, 0.4f, 0.1f); // Define the fixSpineColor in the RGBA format
         mobileSpineColor = new Color(0.8f, 0.5f, 0.5f, 1.0f); // Define the mobileSpineColor in the RGBA format
         //// Set the initial color to mobile
-        spine_mat.SetColor("_Color", mobileSpineColor); // Set mobileSpineColor as the initial color of the spine
-        spineModel.GetComponentInChildren<MeshRenderer>().material = spine_mat; // Assign this color to the spineModel
+        //spine_mat.SetColor("_Color", mobileSpineColor); // Set mobileSpineColor as the initial color of the spine
+        spineModel.GetComponentInChildren<MeshRenderer>().material = mobile_spine_mat; // Assign this color to the spineModel
         //// Also set the clipping plane color to mobile
         clipping_mat = Resources.Load("Materials/Clipping_mat") as Material; // Load the material of interest from the path
         clipping_mat.SetColor("_Color", mobileSpineColor); // Align the color of clipping_mat with the color of the spine (mobileSpineColor in this case) 
@@ -181,7 +183,7 @@ public class PressableButtons : MonoBehaviour
         GameObject switchButtonsScriptHolder = GameObject.Find("ControlPanel");
         switchButtonsScriptHolder.GetComponent<SwitchButtons>().spineModel = spineModel;
         switchButtonsScriptHolder.GetComponent<SwitchButtons>().mobileImageGO = imageModel;
-        switchButtonsScriptHolder.GetComponent<SwitchButtons>().spine_mat = spine_mat;
+        switchButtonsScriptHolder.GetComponent<SwitchButtons>().spine_mat = mobile_spine_mat;
         switchButtonsScriptHolder.GetComponent<SwitchButtons>().clipping_mat = clipping_mat;
         switchButtonsScriptHolder.GetComponent<SwitchButtons>().imageHandler = imageHandler;
         switchButtonsScriptHolder.GetComponent<SwitchButtons>().imageHandlerMobile_mat = imageHandlerMobile_mat;
@@ -523,13 +525,13 @@ public class PressableButtons : MonoBehaviour
     // This function is called everytime the user fixes the spine in the 3D world, either clicking the corresponding button or speaking the associated voice command
     public void OnReleaseSpineClicked()
     {
-        ModifySpine(spineModel, false, spine_mat, clipping_mat, fixSpineColor);
+        ModifySpine(spineModel, false, fixed_spine_mat, clipping_mat, fixSpineColor);
     }
 
     // This function is called everytime the user enables the manipulation of the spine in the 3D world, either clicking the corresponding button or speaking the associated voice command
     public void OnModifySpineClicked()
     {
-        ModifySpine(spineModel, true, spine_mat, clipping_mat, mobileSpineColor);
+        ModifySpine(spineModel, true, mobile_spine_mat, clipping_mat, mobileSpineColor);
     }
 
     // This function is called everytime the user iterates to the next possible diameter, either clicking the corresponding button or speaking the associated voice command
@@ -589,8 +591,10 @@ public class PressableButtons : MonoBehaviour
     void ModifySpine(GameObject spineGO, bool boolean, Material spineMat, Material clippingMat, Color spineColor)
     {
         MakeObjectManipulable(spineGO, boolean);
-        spineMat.SetColor("_Color", spineColor);
+        //spineMat.SetColor("_Color", spineColor);
         clippingMat.SetColor("_Color", spineColor);
+
+        spineModel.GetComponentInChildren<MeshRenderer>().material = spineMat;
     }
 
     // En/unable the gameobject components to make it modifiable (or not)
