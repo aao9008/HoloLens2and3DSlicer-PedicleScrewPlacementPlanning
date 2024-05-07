@@ -21,9 +21,6 @@ public class ModelImporter : MonoBehaviour
             Debug.Log("Models object is null!");
         }
 
-        // Get the PressableButtons script form the "Models" GameObject
-        pressableButtonsScript = modelsObject.GetComponent<PressableButtons>();
-
         // Access Parent model variable in the PressableButtons script
         parentModel = pressableButtonsScript.parentModel;
 
@@ -210,6 +207,8 @@ public class ModelImporter : MonoBehaviour
             // Double the height while maintaining the center position
             Vector3 newSize = boxCollider.size;
             newSize.y *= -2;
+            newSize.x *= 1.35f;
+            newSize.z *= 1.35f;
             boxCollider.size = newSize;
 
             //Adjust the center position to maintain the lower edge at the same position
