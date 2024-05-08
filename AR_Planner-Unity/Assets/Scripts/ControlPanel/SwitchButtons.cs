@@ -46,7 +46,7 @@ public class SwitchButtons : MonoBehaviour
 
 
     /// SPINE VISIBILITY ///
-    Interactable spineVisibility_Switch; // Interactable behavior of the switch button that shows/hide the spine in the 3D view
+    internal Interactable spineVisibility_Switch; // Interactable behavior of the switch button that shows/hide the spine in the 3D view
     GameObject spineVisibility_SwitchGO; // GameObject behavior of the switch button
     TextMeshPro spineVisibility_label; // Label bellow the switch button that indicates if the spine visible
     Material visible_mat; // Material of the spine when it is visible
@@ -227,7 +227,7 @@ public class SwitchButtons : MonoBehaviour
 
     /// SPINE VISIBILITY ///
     // This function is called everytime the user activates the spine visibility switch button
-    void OnTurnModelON(Microsoft.MixedReality.Toolkit.UI.Interactable index)
+    internal void OnTurnModelON(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the visible material to the spine
         //spineModel.GetComponentInChildren<MeshRenderer>().material = visible_mat;
@@ -237,10 +237,11 @@ public class SwitchButtons : MonoBehaviour
         spineModelMesh.enabled = true;
         // Update the button label
         //spineVisibility_label.text = "Skin ON";
+        Debug.Log(index);
     }
 
     // This function is called everytime the user deactivates the spine visibility switch button
-    void OnTurnModelOFF(Microsoft.MixedReality.Toolkit.UI.Interactable index)
+    internal void OnTurnModelOFF(Microsoft.MixedReality.Toolkit.UI.Interactable index)
     {
         // Assign the non-visible material to the spine
         visible_mat = spine_mat; // the visible material could be spine_mat or clipping_mat
@@ -249,6 +250,7 @@ public class SwitchButtons : MonoBehaviour
         spineModelMesh.enabled = false;
         // Update the button label
         //spineVisibility_label.text = "Skin OFF";
+        Debug.Log(index);
     }
 
     /// SHOW IMAGE ///
