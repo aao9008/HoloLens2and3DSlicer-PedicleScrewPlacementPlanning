@@ -25,6 +25,8 @@ public class Controller : MonoBehaviour
     float DPadYInput;
     float DPadXInput;
     float moveSpeed = 0.5f;
+    float maxSpeed = 1f;
+    float minSpeed = 0.011f;
 
     void start()
     {
@@ -36,6 +38,7 @@ public class Controller : MonoBehaviour
         ToggleParentModel();
         LockBody();
         MoveModelWithDPad();
+        AdjustMoveSpeed();
     }
 
     // This function handels logic for parent model visiblity controller button
@@ -133,6 +136,38 @@ public class Controller : MonoBehaviour
         {
             pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
         }
+    }
+
+    void AdjustMoveSpeed()
+    {
+        // Check if left or right bumper was pressed
+        
+        if(Input.GetButtonDown("RightBumper") && moveSpeed < maxSpeed) // Increase move speed if right bumper was pressed
+        {
+            moveSpeed += 0.1f;
+            Debug.Log(moveSpeed);
+
+        }
+        else if(Input.GetButtonDown("LeftBumper") && moveSpeed > minSpeed) // Decrease move speed if left bumper was pressed
+        {
+            DecreaseMoveSpeed();
+        }
+
+        
+    }
+
+    void DecreaseMoveSpeed()
+    {
+        if (moveSpeed > 0.11f)
+        {
+            moveSpeed -= 0.1f;
+        }
+        else if (moveSpeed < 0.11f && moveSpeed > minSpeed)
+        {
+            moveSpeed -= 0.01f;
+        }
+
+        Debug.Log(moveSpeed);
     }
 
     // Audio cues for button action exectuions

@@ -32,7 +32,7 @@ public class PressableButtons : MonoBehaviour
     public string patientID; // Folder name of the patient of interest. This folder name/patient identifier is used to automatically load the models of interest. 
     
     /// Parent Model Information ///
-    GameObject spineModel; // Model of the spine corresponding to the patient "patientNumber"
+    internal GameObject spineModel; // Model of the spine corresponding to the patient "patientNumber"
     Material mobile_spine_mat; // Material associated to the spine model
     Material fixed_spine_mat;
     Material clipping_mat; // Material with the clipping property
@@ -93,6 +93,7 @@ public class PressableButtons : MonoBehaviour
             spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
             //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
             spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
+            
 
             CreateChildOBJModels();
         }
@@ -122,8 +123,8 @@ public class PressableButtons : MonoBehaviour
             spineModel = GameObject.Instantiate(spineItem, modelsParentTransform) as GameObject; // Instantiate the spine as a child of modelsParentTransform
             spineModel.name = spineModelName; // Change the spine model name to spineModelName
             spineModel.transform.localPosition = Vector3.zero; // Set the model in the origin of coordinates ([0,0,0])
-          //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
-            spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by defaultn
+            //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
+            spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
 
             Debug.Log("I'm the spine model and my name is: " + spineModel.name);
             CreateChildGLTFModels();
