@@ -9,7 +9,7 @@ public class Controller : MonoBehaviour
     private bool modelOn = true;
     public SwitchButtons switchButtons;
     public PressableButtons pressableButtons;
-    //GameObject model;
+    GameObject model;
 
 
     public AudioSource buttonDown;
@@ -20,11 +20,22 @@ public class Controller : MonoBehaviour
     float holdDurationThreshold = 2f; // Adjust this threshold as needed. 
     bool actionExecuted = false;
     bool modelLocked = false;
-    
+
+    // Variables for DPad Movements
+    float DPadYInput;
+    float DPadXInput;
+    float moveSpeed = 0.5f;
+
+    void start()
+    {
+        //model = pressableButtons.spineModel;
+    }
+
     void Update()
     {
         ToggleParentModel();
         LockBody();
+        MoveModelWithDPad();
     }
 
     // This function handels logic for parent model visiblity controller button
@@ -104,9 +115,23 @@ public class Controller : MonoBehaviour
 
     void MoveModelWithDPad()
     {
-        if (Input.GetButton("Up"))
+        if (pressableButtons.spineModel.GetComponent<ObjectManipulator>().enabled == false)
         {
+            return;
+        }
+        DPadYInput = Input.GetAxis("DPadY");
+        DPadXInput = Input.GetAxis("DPadX");
+        DPadXInput *= -1; // Left and right inputs will appear reversed if X input is not multiplied by -1.
+        DPadMovement();
+    }
 
+    void DPadMovement()
+    {
+        Vector3 movementDirection = new Vector3(DPadXInput, 0, DPadYInput).normalized;
+
+        if (movementDirection != Vector3.zero)
+        {
+            pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
         }
     }
 
