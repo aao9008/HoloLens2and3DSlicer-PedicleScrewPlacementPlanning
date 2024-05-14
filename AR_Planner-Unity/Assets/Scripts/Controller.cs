@@ -1,17 +1,25 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using Microsoft.MixedReality.Toolkit.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 
 public class Controller : MonoBehaviour
 {
-    // Boolean variable to keep track of model visibility state
-    private bool modelOn = true;
+    // References to values in PressableButtons script
     public SwitchButtons switchButtons;
     public PressableButtons pressableButtons;
     GameObject model;
 
+    // Reference to gamecontroller
+    private Gamepad gamepad;
 
+    // Boolean variable to keep track of model visibility state
+    private bool modelOn = true;
+
+    // Audio files for audio cues
     public AudioSource buttonDown;
     public AudioSource buttonUp;
 
@@ -30,13 +38,20 @@ public class Controller : MonoBehaviour
 
     void start()
     {
-        //model = pressableButtons.spineModel;
+        // Find the first connected Gamepad
+        gamepad = Gamepad.current;
     }
 
     void Update()
     {
+        // Check for connected gamepad if null
+        if(gamepad  == null)
+        {
+            gamepad = Gamepad.current;
+        }
+
         ToggleParentModel();
-        LockBody();
+        HoldButton(ToggleLockBody, "LockBody");
         MoveModelWithDPad();
         AdjustMoveSpeed();
     }
@@ -69,9 +84,10 @@ public class Controller : MonoBehaviour
         modelOn= modelOn ? false : true;
     }
 
-    void LockBody()
+    // Logic for assigning a function to a button press and hold on controller 
+    void HoldButton(Action action, string buttonName)
     {
-       if (Input.GetButton("LockBody"))
+       if (Input.GetButton(buttonName))
        {
            // Button is being held down
            if (!buttonHeldDown)
@@ -84,7 +100,9 @@ public class Controller : MonoBehaviour
            else if (!actionExecuted && Time.time - holdStartTime >= holdDurationThreshold) // Check if the hold duration exceeds the threshold
            {
                 // Execute the action for holding the button down for the specified duration
-                modelLocked = ToggleLockBody(modelLocked);
+                action?.Invoke(); // Invoke the action
+
+                // Play audio cue
                 PlayAudioCue();
 
                 // Set flag to indicate that action has been executed. 
@@ -99,7 +117,8 @@ public class Controller : MonoBehaviour
        } 
     }
 
-    bool ToggleLockBody(bool modelLocked)
+    // Logic for locking and unlocking model in place
+    void ToggleLockBody()
     {
         // If model is not locked
         if (!modelLocked){
@@ -113,9 +132,10 @@ public class Controller : MonoBehaviour
         }
 
         // Update model lock flag
-        return !modelLocked;
+        modelLocked = !modelLocked;
     }
 
+    // Logic for moving model along x and z axis using dpad
     void MoveModelWithDPad()
     {
         if (pressableButtons.spineModel.GetComponent<ObjectManipulator>().enabled == false)
@@ -138,22 +158,36 @@ public class Controller : MonoBehaviour
         }
     }
 
+    // Controls speed of model manipulations 
     void AdjustMoveSpeed()
     {
         // Check if left or right bumper was pressed
         
         if(Input.GetButtonDown("RightBumper") && moveSpeed < maxSpeed) // Increase move speed if right bumper was pressed
         {
-            moveSpeed += 0.1f;
-            Debug.Log(moveSpeed);
-
+            IncreaseMoveSpeed();
         }
         else if(Input.GetButtonDown("LeftBumper") && moveSpeed > minSpeed) // Decrease move speed if left bumper was pressed
         {
             DecreaseMoveSpeed();
         }
+    }
 
-        
+    void IncreaseMoveSpeed()
+    {
+        if(moveSpeed > 0.10f)
+        {
+            moveSpeed += 0.1f;
+        }
+        else if (moveSpeed < 0.11f)
+        {
+            moveSpeed += 0.01f;
+        }
+
+        // Trigger haptic feedback
+        gamepad.SetMotorSpeeds(0.5f, 0.5f);
+
+        Debug.Log(moveSpeed);
     }
 
     void DecreaseMoveSpeed()
@@ -166,6 +200,9 @@ public class Controller : MonoBehaviour
         {
             moveSpeed -= 0.01f;
         }
+
+        // Trigger haptic feedback
+        gamepad.SetMotorSpeeds(0.5f, 0.5f);
 
         Debug.Log(moveSpeed);
     }
