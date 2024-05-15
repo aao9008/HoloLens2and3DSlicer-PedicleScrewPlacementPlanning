@@ -137,20 +137,24 @@ public class PressableButtonsEditor : Editor
         }
 
         // Add Check All/Uncheck All button
-        checkAll = GUILayout.Toggle(checkAll, "Check All");
-        if (checkAll)
+        bool newCheckAll = GUILayout.Toggle(checkAll, "Check All");
+        if (newCheckAll != checkAll)
         {
-            foreach (var model in script.patientModels)
+            checkAll = newCheckAll;
+            if (checkAll)
             {
-                if (!script.target_models.Contains(model) && model != script.parentModel)
+                foreach (var model in script.patientModels)
                 {
-                    script.target_models.Add(model);
+                    if (model != script.parentModel && !script.target_models.Contains(model))
+                    {
+                        script.target_models.Add(model);
+                    }
                 }
             }
-        }
-        else
-        {
-            script.target_models.Clear();
+            else
+            {
+                script.target_models.Clear();
+            }
         }
 
         for (int i = 0; i < script.patientModels.Length; i++)
@@ -176,6 +180,7 @@ public class PressableButtonsEditor : Editor
             }
         }
     }
+
 
     private void CreatePrefabButton(PressableButtons script)
     {
