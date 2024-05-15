@@ -8,6 +8,9 @@ using System.IO;
 public class PressableButtonsEditor : Editor
 {
     private GUIStyle redLabelStyle;
+    private bool modelsFetched = false;
+    private string previousPatientID = null;
+    private bool checkAll = false; // Add a variable to track the check all state
 
     public override void OnInspectorGUI()
     {
@@ -38,53 +41,48 @@ public class PressableButtonsEditor : Editor
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
         CreatePrefabButton(script);
-       
-        // Update the Inspector UI
+
         serializedObject.ApplyModifiedProperties();
+
+        if (previousPatientID != script.patientID)
+        {
+            previousPatientID = script.patientID;
+            PopulateModelList(script);
+        }
     }
 
-    ///////// Text Style Method //////
     private void InitializeStyles()
     {
-        redLabelStyle = new GUIStyle(EditorStyles.label);
-        redLabelStyle.normal.textColor = Color.red;
+        redLabelStyle = new GUIStyle(EditorStyles.label)
+        {
+            normal = { textColor = Color.red }
+        };
     }
 
-    ///////// GUI Button Widgets//////
     private void PatientSelectionMenu(PressableButtons script)
     {
         EditorGUILayout.LabelField("Select Patient", EditorStyles.boldLabel);
 
-        // Display a button in the Inspector to trigger the method
         if (GUILayout.Button("Refresh Patient List"))
         {
             PopulatePatientIDs(script);
+            modelsFetched = false;
         }
 
-        // Display a dropdown for selecting the Patient ID in the Inspector
         if (script.patientIDs != null && script.patientIDs.Count > 0)
         {
             int selectedIndex = EditorGUILayout.Popup("Selected Patient:", script.patientIDs.IndexOf(script.patientID), script.patientIDs.ToArray());
             if (selectedIndex >= 0 && selectedIndex < script.patientIDs.Count)
             {
                 string newlySelectedPatientID = script.patientIDs[selectedIndex];
-
                 if (script.patientID != newlySelectedPatientID)
                 {
-                    //Update the previously selected patient ID
-                    //previouslySelectedPatientID = newlySelectedPatientID;
-
-                    // Reset Toggle Menu
                     script.target_models.Clear();
+                    script.patientID = newlySelectedPatientID;
                 }
-
-                script.patientID = newlySelectedPatientID;
-
-                // Automatically refresh model list
-                PopulateModelList(script);
             }
         }
-        else if (script.patientIDs == null || script.patientIDs.Count == 0)
+        else
         {
             EditorGUILayout.LabelField("Selected Patient:", "No patient folders found", redLabelStyle);
         }
@@ -94,62 +92,69 @@ public class PressableButtonsEditor : Editor
     {
         EditorGUILayout.LabelField("Select Parent Model", EditorStyles.boldLabel);
 
-        // Display a button in the Inspector to trigger the method
         if (GUILayout.Button(new GUIContent("Refresh Model List", "Selected model will be used for land marking")))
         {
             PopulateModelList(script);
         }
 
-        if (script.patientModels != null && script.patientModels.Length > 0)
+        if (modelsFetched && script.patientModels != null && script.patientModels.Length > 0)
         {
-            int selectedIndex = 0; // Initialize to the first index by default
-
-            // Find the index of a model containing the word "skin" in script.patientModels
+            int selectedIndex = 0;
             for (int i = 0; i < script.patientModels.Length; i++)
             {
                 if (script.patientModels[i].ToLower().Contains("skin"))
                 {
                     selectedIndex = i;
-                    break; // Stop searching after finding the first model containing "skin"
+                    break;
                 }
             }
 
-            // Find the index of script.parentModel in script.patientModels
             int index = Array.IndexOf(script.patientModels, script.parentModel);
             if (index != -1)
             {
                 selectedIndex = index;
             }
 
-
             selectedIndex = EditorGUILayout.Popup("Parent Model:", selectedIndex, script.patientModels);
             script.parentModel = script.patientModels[selectedIndex];
 
-            // Send parent model name to ModelImporter class
-            // Parent model prefabs get processed differently from child models. 
             ModelImporter.parentModel = script.parentModel;
         }
         else
         {
-
             EditorGUILayout.LabelField("Parent Model:", "No models found", redLabelStyle);
-
         }
     }
 
     private void TargetsModelMenu(PressableButtons script)
     {
-        // Display the patientModels array in Inspector
         EditorGUILayout.LabelField("Select Target/Targets from Patient Models", EditorStyles.boldLabel);
 
-        if (script.patientModels.Length == 0 || script.patientModels == null)
+        if (script.patientModels == null || script.patientModels.Length == 0)
         {
             EditorGUILayout.LabelField(" ", "No models found", redLabelStyle);
+            return;
+        }
+
+        // Add Check All/Uncheck All button
+        checkAll = GUILayout.Toggle(checkAll, "Check All");
+        if (checkAll)
+        {
+            foreach (var model in script.patientModels)
+            {
+                if (!script.target_models.Contains(model) && model != script.parentModel)
+                {
+                    script.target_models.Add(model);
+                }
+            }
+        }
+        else
+        {
+            script.target_models.Clear();
         }
 
         for (int i = 0; i < script.patientModels.Length; i++)
         {
-            // Skip rendering the parentModel in the list
             if (script.patientModels[i] == script.parentModel)
             {
                 continue;
@@ -182,69 +187,48 @@ public class PressableButtonsEditor : Editor
         }
     }
 
-    ///////// Button Logic //////////
-    
-    // Method to populate patientIDs list
     private void PopulatePatientIDs(PressableButtons script)
     {
-        // Example: Populate patientIDs list
         script.patientIDs = PatientIDsFetcher.FetchPatientIDs();
-
-        // Refresh the Inspector to reflect changes
         EditorUtility.SetDirty(script);
     }
 
-    // Method to populate patient models list
     private void PopulateModelList(PressableButtons script)
     {
         string patientID = script.patientID;
-
-        // Populate list of models 
-        script.patientModels = PatientModelsFetcher.FetchPatientModels(patientID); // Get an array of patient model names.
-
-        // Refresh the Inspector to reflect changes
+        script.patientModels = PatientModelsFetcher.FetchPatientModels(patientID);
+        modelsFetched = true;
         EditorUtility.SetDirty(script);
     }
 
-    // Method to automatically create prefabs from OBJ models in a patients folder
     private void CreatePrefabs(PressableButtons script)
     {
-        // Get the patientID from the PressableButtons script.
         string patientID = script.patientID;
         string[] patientModels = script.patientModels;
         string prefabFolderPath = Path.Combine("Assets", "Resources", "Prefabs", "SpinePrefabs", patientID);
         string modelFolderPath;
 
-        //Clear the list
         script.gltfModels.Clear();
 
-        Debug.Log(script.gltfModels.Count);
-
-        // If not patietn is selected, notify the user
-        if (patientID == null)
+        if (string.IsNullOrEmpty(patientID))
         {
             Debug.LogError("Please select a patient first.");
             return;
         }
 
-        // Dispaly error message and exit function if no models are found.
-        if (patientModels.Length == 0)
+        if (patientModels == null || patientModels.Length == 0)
         {
-            Debug.LogError("No models were found in " + patientID + "'s folder!!!");
+            Debug.LogError($"No models were found in {patientID}'s folder!!!");
             return;
         }
 
-        // Delete old prefabs
         DeleteOldPrefabs(prefabFolderPath);
-
-        // Are models form OBJ or GLTF file?
         modelFolderPath = PatientModelsFetcher.GetModelsPath(patientID);
 
         string[] files = Directory.GetFiles(modelFolderPath, "*.gltf");
 
         if (files.Length > 0)
         {
-            //script.gltfModels = ModelImporter.CreatePrefabsFromGLTF(patientID, files[0]);
             Debug.Log("Will create prefab at runtime.");
         }
         else
@@ -253,8 +237,6 @@ public class PressableButtonsEditor : Editor
         }
 
         EditorUtility.DisplayDialog("Prefab Creation", "Prefabs have been successfully created!", "OK");
-
-        // Refresh the Inspector to reflect changes
         EditorUtility.SetDirty(script);
     }
 
@@ -264,18 +246,13 @@ public class PressableButtonsEditor : Editor
         {
             string[] prefabs = Directory.GetFiles(prefabFolderPath);
 
-            if (prefabs.Length > 0)
+            foreach (string prefab in prefabs)
             {
-                foreach (string prefab in prefabs)
-                {
-                    File.Delete(prefab);
-                }
-
-                Debug.Log("Old Prefabs have been deleted");
+                File.Delete(prefab);
             }
 
-            //AssetDatabase.Refresh();
-
+            Debug.Log("Old Prefabs have been deleted");
         }
     }
 }
+
