@@ -158,8 +158,13 @@ public class ModelImporter : MonoBehaviour
     // Logic for sizing box collider to roughtly the size of the model it is attached to. 
     public static void AddTightBoxColliderToMeshObject(GameObject obj, string modelName)
     {
-        // Get or add a BoxCollider component to the GameObject
-        BoxCollider boxCollider = obj.GetComponent<BoxCollider>();
+        // If prefab is marked as parent 
+        if (modelName != parentModel)
+        {
+            return;
+        }
+            // Get or add a BoxCollider component to the GameObject
+            BoxCollider boxCollider = obj.GetComponent<BoxCollider>();
         if (boxCollider == null)
         {
             boxCollider = obj.AddComponent<BoxCollider>();
@@ -201,21 +206,19 @@ public class ModelImporter : MonoBehaviour
             }
         }
 
-        // If prefab is marked as parent 
-        if (modelName == parentModel)
-        {
-            // Double the height while maintaining the center position
-            Vector3 newSize = boxCollider.size;
-            newSize.y *= -2;
-            newSize.x *= 1.35f;
-            newSize.z *= 1.35f;
-            boxCollider.size = newSize;
+        
+        // Double the height while maintaining the center position
+        Vector3 newSize = boxCollider.size;
+        newSize.y *= -2;
+        newSize.x *= 1.35f;
+        newSize.z *= 1.35f;
+        boxCollider.size = newSize;
 
-            //Adjust the center position to maintain the lower edge at the same position
-            Vector3 newCenter = boxCollider.center;
-            newCenter.y += newSize.y * 0.25f; // Adjust the center by half of the increased height
-            boxCollider.center = newCenter;
-        }
+        //Adjust the center position to maintain the lower edge at the same position
+        Vector3 newCenter = boxCollider.center;
+        newCenter.y += newSize.y * 0.25f; // Adjust the center by half of the increased height
+        boxCollider.center = newCenter;
+  
     }
 
     // Logic for adding necessary scripts to a model depending on if the model is the parent or a child model. 
@@ -248,6 +251,9 @@ public class ModelImporter : MonoBehaviour
  
         // Add NearInteractionGrabbable script
         NearInteractionGrabbable nearInteractionGrabbableScript = prefab.AddComponent<NearInteractionGrabbable>();
+
+        //AdjustPivotToCenter adjustPivot = prefab.AddComponent<AdjustPivotToCenter>();
+       // adjustPivot.AdjustPivot();
     }
 }
 
