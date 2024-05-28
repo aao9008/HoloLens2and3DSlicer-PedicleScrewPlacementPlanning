@@ -23,6 +23,8 @@ public class Controller : MonoBehaviour
     public AudioSource buttonDown;
     public AudioSource buttonUp;
 
+    private Coroutine resetCoroutine;
+
     bool buttonHeldDown = false;
     float holdStartTime = 0f;
     float holdDurationThreshold = 2f; // Adjust this threshold as needed. 
@@ -36,6 +38,12 @@ public class Controller : MonoBehaviour
     float maxSpeed = 1f;
     float minSpeed = 0.011f;
 
+    float RightStickXInput;
+    float RightStickYInput;
+
+    float RightTriggerInput;
+    float LeftTriggerInput;
+
     void start()
     {
         // Find the first connected Gamepad
@@ -45,15 +53,18 @@ public class Controller : MonoBehaviour
     void Update()
     {
         // Check for connected gamepad if null
-        if(gamepad  == null)
+        if (gamepad == null)
         {
             gamepad = Gamepad.current;
         }
 
+        AdjustMoveSpeed();
+        ResetMoveSpeed();
         ToggleParentModel();
         HoldButton(ToggleLockBody, "LockBody");
         MoveModelWithDPad();
-        AdjustMoveSpeed();
+        AdjustHeight();
+        RotateModel();
     }
 
     // This function handels logic for parent model visiblity controller button
@@ -81,24 +92,24 @@ public class Controller : MonoBehaviour
             switchButtons.OnTurnModelON(switchButtons.spineVisibility_Switch);
         }
 
-        modelOn= modelOn ? false : true;
+        modelOn = modelOn ? false : true;
     }
 
     // Logic for assigning a function to a button press and hold on controller 
     void HoldButton(Action action, string buttonName)
     {
-       if (Input.GetButton(buttonName))
-       {
-           // Button is being held down
-           if (!buttonHeldDown)
-           {
-               // Button has just been pressed, start tracking hold duration
-               buttonHeldDown = true;
-               actionExecuted = false;
-               holdStartTime = Time.time;
-           }
-           else if (!actionExecuted && Time.time - holdStartTime >= holdDurationThreshold) // Check if the hold duration exceeds the threshold
-           {
+        if (Input.GetButton(buttonName))
+        {
+            // Button is being held down
+            if (!buttonHeldDown)
+            {
+                // Button has just been pressed, start tracking hold duration
+                buttonHeldDown = true;
+                actionExecuted = false;
+                holdStartTime = Time.time;
+            }
+            else if (!actionExecuted && Time.time - holdStartTime >= holdDurationThreshold) // Check if the hold duration exceeds the threshold
+            {
                 // Execute the action for holding the button down for the specified duration
                 action?.Invoke(); // Invoke the action
 
@@ -107,21 +118,21 @@ public class Controller : MonoBehaviour
 
                 // Set flag to indicate that action has been executed. 
                 actionExecuted = true;
-           }
-       }
-       else
-       {
+            }
+        }
+        else
+        {
             // Button is released, reset button hold state
             buttonHeldDown = false;
             actionExecuted = false;
-       } 
+        }
     }
 
     // Logic for locking and unlocking model in place
     void ToggleLockBody()
     {
         // If model is not locked
-        if (!modelLocked){
+        if (!modelLocked) {
             // Lock the model
             pressableButtons.OnReleaseSpineClicked();
         }
@@ -162,12 +173,12 @@ public class Controller : MonoBehaviour
     void AdjustMoveSpeed()
     {
         // Check if left or right bumper was pressed
-        
-        if(Input.GetButtonDown("RightBumper") && moveSpeed < maxSpeed) // Increase move speed if right bumper was pressed
+
+        if (Input.GetButtonDown("RightBumper") && moveSpeed < maxSpeed) // Increase move speed if right bumper was pressed
         {
             IncreaseMoveSpeed();
         }
-        else if(Input.GetButtonDown("LeftBumper") && moveSpeed > minSpeed) // Decrease move speed if left bumper was pressed
+        else if (Input.GetButtonDown("LeftBumper") && moveSpeed > minSpeed) // Decrease move speed if left bumper was pressed
         {
             DecreaseMoveSpeed();
         }
@@ -175,7 +186,7 @@ public class Controller : MonoBehaviour
 
     void IncreaseMoveSpeed()
     {
-        if(moveSpeed > 0.10f)
+        if (moveSpeed > 0.10f)
         {
             moveSpeed += 0.1f;
         }
@@ -205,6 +216,100 @@ public class Controller : MonoBehaviour
         gamepad.SetMotorSpeeds(0.5f, 0.5f);
 
         Debug.Log(moveSpeed);
+    }
+
+    void ResetMoveSpeed()
+    {
+        if (Input.GetButton("LeftBumper") && Input.GetButton("RightBumper"))
+        {
+            if (resetCoroutine == null)
+            {
+                resetCoroutine = StartCoroutine(ResetMoveSpeedAfterHold());
+            }
+        }
+        else
+        {
+            // Stop the coroutine if either bumper is released
+            if (resetCoroutine != null)
+            {
+                StopCoroutine(resetCoroutine);
+                resetCoroutine = null;
+            }
+        }
+    }
+
+    private IEnumerator ResetMoveSpeedAfterHold()
+    {
+        yield return new WaitForSeconds(2);
+
+        if (Input.GetButton("LeftBumper") && Input.GetButton("RightBumper"))
+        {
+            moveSpeed = 0.5f;
+            Debug.Log("Move speed reset: " + moveSpeed);
+
+            // Play audio cue
+            PlayAudioCue();
+
+            // Trigger haptic feedback
+            gamepad.SetMotorSpeeds(1.0f, 1.0f); // Stronger feedback for reset
+            yield return new WaitForSeconds(0.5f); // Duration of the haptic feedback
+            gamepad.SetMotorSpeeds(0, 0); // Stop haptic feedback
+        }
+    }
+
+    void AdjustHeight()
+    {
+        if (pressableButtons.spineModel.GetComponent<ObjectManipulator>().enabled == false)
+        {
+            return;
+        }
+        RightTriggerInput = -Input.GetAxis("RightTrigger");
+        LeftTriggerInput = Input.GetAxis("LeftTrigger");
+
+        DecreaseHeight();
+        IncreaseHeight();
+    }
+
+    void DecreaseHeight()
+    {
+        Vector3 movementDirection = new Vector3(0, LeftTriggerInput, 0).normalized;
+
+        if (movementDirection != Vector3.zero)
+        {
+            pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
+        }
+    }
+
+    void IncreaseHeight()
+    {
+        Vector3 movementDirection = new Vector3(0, RightTriggerInput, 0).normalized;
+
+        if (movementDirection != Vector3.zero)
+        {
+            pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
+        }
+    }
+
+    void RotateModel()
+    {
+        if (pressableButtons.spineModel.GetComponent<ObjectManipulator>().enabled == false)
+        {
+            return;
+        }
+        RightStickYInput = Input.GetAxis("RightStickY");
+        RightStickXInput = Input.GetAxis("RightStickX");
+        RightStickXInput *= -1; // Left and right inputs will appear reversed if X input is not multiplied by -1.
+        RightJoyStickMovement();
+    }
+
+    void RightJoyStickMovement()
+    {
+        Vector3 movementDirection = new Vector3(RightStickXInput, RightStickYInput, 0).normalized;
+
+        if (movementDirection != Vector3.zero)
+        {
+            pressableButtons.spineModel.transform.Rotate(movementDirection * (moveSpeed * 30) * Time.deltaTime);
+        }
     }
 
     // Audio cues for button action exectuions
