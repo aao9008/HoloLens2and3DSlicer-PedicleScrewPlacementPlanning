@@ -251,9 +251,6 @@ public class ModelImporter : MonoBehaviour
  
         // Add NearInteractionGrabbable script
         NearInteractionGrabbable nearInteractionGrabbableScript = prefab.AddComponent<NearInteractionGrabbable>();
-
-        //AdjustPivotToCenter adjustPivot = prefab.AddComponent<AdjustPivotToCenter>();
-       // adjustPivot.AdjustPivot();
     }
 }
 

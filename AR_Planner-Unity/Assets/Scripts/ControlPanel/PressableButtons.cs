@@ -96,6 +96,8 @@ public class PressableButtons : MonoBehaviour
             
 
             CreateChildOBJModels();
+
+            CenterPivot();
         }
         else if (files.Length > 0)
         {
@@ -126,8 +128,9 @@ public class PressableButtons : MonoBehaviour
             //spineModel.transform.localRotation = Quaternion.identity; // Set the model with 0 rotation in any axis
             spineModel.transform.eulerAngles = new Vector3(0, 0, 180); // patient is in supine position by default
 
-            Debug.Log("I'm the spine model and my name is: " + spineModel.name);
             CreateChildGLTFModels();
+
+            CenterPivot();
         }
 
         // Intantiate the image body within the spine model
@@ -201,7 +204,19 @@ public class PressableButtons : MonoBehaviour
 
     }
 
-    ///////////////////////////////// Child Model Creation Logic////////////////////
+    ///////////////////////////////// Additional Model Logic////////////////////
+    public void CenterPivot()
+    {
+        GameObject modelParent = GameObject.Find("Models");
+        CenterPivot centerPivot = modelParent.GetComponent<CenterPivot>();
+        if (centerPivot == null)
+        {
+            centerPivot = modelParent.AddComponent<CenterPivot>();
+        }
+        centerPivot.CenterModelPivot();
+
+        Debug.Log("I'm the spine model and my name is: " + spineModel.name);
+    }
     public void CreateChildGLTFModels()
     {
         foreach (GameObject model in gltfModels)
