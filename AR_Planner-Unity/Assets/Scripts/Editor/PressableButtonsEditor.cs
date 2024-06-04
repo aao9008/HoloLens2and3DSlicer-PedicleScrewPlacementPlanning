@@ -137,7 +137,7 @@ public class PressableButtonsEditor : Editor
         }
 
         // Add Check All/Uncheck All button
-        bool newCheckAll = GUILayout.Toggle(checkAll, "Check All");
+        bool newCheckAll = GUILayout.Toggle(checkAll, "Select All");
         if (newCheckAll != checkAll)
         {
             checkAll = newCheckAll;

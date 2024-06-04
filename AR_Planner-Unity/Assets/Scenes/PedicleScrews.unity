@@ -2290,6 +2290,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   switchButtons: {fileID: 356159928}
   pressableButtons: {fileID: 1851280216}
+  models: {fileID: 772716403}
   buttonDown: {fileID: 659042584}
   buttonUp: {fileID: 659042583}
 --- !u!1 &705507993
@@ -5513,52 +5514,36 @@ MonoBehaviour:
   patientIDs:
   - Demo
   - Test
-  patientID: Demo
+  - Test-2
+  patientID: Test-2
   patientModels:
-  - skin
-  - muscles
-  - lateral_lesion
-  - medial_lesion
-  - lateral_lesion_trajectories
-  - medial_lesion_trajectory
-  - bones
-  - aorta_and_iliac_arteries
-  - inferior_vena_cava_and_iliac_veins
-  - liver
-  - gallbladder
-  - right_kidney
-  - left_kidney
   - spleen
-  - stomach
+  - liver
+  - skin
+  - kidney
+  - arteries
+  - veins
+  - muscles
+  - lungs
+  - MISC
+  - bones
+  - small bowel
   - colon
-  - urinary_bladder
-  - liver_tumor
-  - small_bowel
-  - right_adrenal_gland
-  - left_adrenal_gland
-  - neighboring_small_bowel_loops
+  - trajectory
   parentModel: skin
   target_models:
-  - left_kidney
-  - right_kidney
   - spleen
-  - stomach
-  - colon
-  - urinary_bladder
-  - liver_tumor
-  - small_bowel
-  - right_adrenal_gland
-  - left_adrenal_gland
-  - neighboring_small_bowel_loops
-  - gallbladder
   - liver
-  - inferior_vena_cava_and_iliac_veins
-  - aorta_and_iliac_arteries
-  - medial_lesion_trajectory
-  - lateral_lesion_trajectories
-  - medial_lesion
+  - kidney
+  - arteries
+  - veins
   - muscles
-  - lateral_lesion
+  - lungs
+  - MISC
+  - bones
+  - small bowel
+  - colon
+  - trajectory
   modelList: []
   gltfModels: []
   screwSelected: 0
