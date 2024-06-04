@@ -11,7 +11,7 @@ public class Controller : MonoBehaviour
     // References to values in PressableButtons script
     public SwitchButtons switchButtons;
     public PressableButtons pressableButtons;
-    GameObject model;
+    public GameObject models;
 
     // Reference to gamecontroller
     private Gamepad gamepad;
@@ -48,6 +48,8 @@ public class Controller : MonoBehaviour
     {
         // Find the first connected Gamepad
         gamepad = Gamepad.current;
+
+        //pressableButtons.spineModel.transform.position = new Vector3(-0.01959822f, 0.0004480685f, 0.3553342f);
     }
 
     void Update()
@@ -155,7 +157,7 @@ public class Controller : MonoBehaviour
         }
         DPadYInput = Input.GetAxis("DPadY");
         DPadXInput = Input.GetAxis("DPadX");
-        DPadXInput *= -1; // Left and right inputs will appear reversed if X input is not multiplied by -1.
+
         DPadMovement();
     }
 
@@ -165,7 +167,7 @@ public class Controller : MonoBehaviour
 
         if (movementDirection != Vector3.zero)
         {
-            pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
+            models.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
         }
     }
 
@@ -263,8 +265,8 @@ public class Controller : MonoBehaviour
         {
             return;
         }
-        RightTriggerInput = -Input.GetAxis("RightTrigger");
-        LeftTriggerInput = Input.GetAxis("LeftTrigger");
+        RightTriggerInput = Input.GetAxis("RightTrigger");
+        LeftTriggerInput = -Input.GetAxis("LeftTrigger");
 
         DecreaseHeight();
         IncreaseHeight();
@@ -276,7 +278,7 @@ public class Controller : MonoBehaviour
 
         if (movementDirection != Vector3.zero)
         {
-            pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
+            models.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
         }
     }
 
@@ -286,7 +288,7 @@ public class Controller : MonoBehaviour
 
         if (movementDirection != Vector3.zero)
         {
-            pressableButtons.spineModel.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
+            models.transform.Translate(movementDirection * moveSpeed * Time.deltaTime);
         }
     }
 
@@ -308,7 +310,7 @@ public class Controller : MonoBehaviour
 
         if (movementDirection != Vector3.zero)
         {
-            pressableButtons.spineModel.transform.Rotate(movementDirection * (moveSpeed * 30) * Time.deltaTime);
+            models.transform.Rotate(movementDirection * (moveSpeed * 40) * Time.deltaTime);
         }
     }
 
