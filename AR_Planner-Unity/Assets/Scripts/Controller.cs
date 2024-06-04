@@ -31,9 +31,9 @@ public class Controller : MonoBehaviour
     bool actionExecuted = false;
     bool modelLocked = false;
 
-    // Variables for DPad Movements
-    float DPadYInput;
-    float DPadXInput;
+    // Variables for DPad Movements and Left Joystick movments
+    float YInput;
+    float XInput;
     float moveSpeed = 0.5f;
     float maxSpeed = 1f;
     float minSpeed = 0.011f;
@@ -64,7 +64,7 @@ public class Controller : MonoBehaviour
         ResetMoveSpeed();
         ToggleParentModel();
         HoldButton(ToggleLockBody, "LockBody");
-        MoveModelWithDPad();
+        MoveModelWithInput();
         AdjustHeight();
         RotateModel();
     }
@@ -149,21 +149,21 @@ public class Controller : MonoBehaviour
     }
 
     // Logic for moving model along x and z axis using dpad
-    void MoveModelWithDPad()
+    void MoveModelWithInput()
     {
         if (pressableButtons.spineModel.GetComponent<ObjectManipulator>().enabled == false)
         {
             return;
         }
-        DPadYInput = Input.GetAxis("DPadY");
-        DPadXInput = Input.GetAxis("DPadX");
+        YInput = Input.GetAxis("DPadY") + -Input.GetAxis("LeftStickY");
+        XInput = Input.GetAxis("DPadX") + Input.GetAxis("LeftStickX");
 
-        DPadMovement();
+        MoveModel();
     }
 
-    void DPadMovement()
+    void MoveModel()
     {
-        Vector3 movementDirection = new Vector3(DPadXInput, 0, DPadYInput).normalized;
+        Vector3 movementDirection = new Vector3(XInput, 0, YInput).normalized;
 
         if (movementDirection != Vector3.zero)
         {
