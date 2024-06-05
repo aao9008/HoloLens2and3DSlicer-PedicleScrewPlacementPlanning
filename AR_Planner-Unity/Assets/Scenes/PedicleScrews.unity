@@ -5515,35 +5515,34 @@ MonoBehaviour:
   - Demo
   - Test
   - Test-2
-  patientID: Test-2
+  - Test-3
+  patientID: Test-3
   patientModels:
   - spleen
   - liver
   - skin
-  - kidney
+  - kidneys
+  - muscles
+  - trajectory
+  - bones
+  - small_bowel
+  - colon
+  - urinary_bladder
   - arteries
   - veins
-  - muscles
-  - lungs
-  - MISC
-  - bones
-  - small bowel
-  - colon
-  - trajectory
   parentModel: skin
   target_models:
   - spleen
   - liver
-  - kidney
+  - kidneys
+  - trajectory
+  - bones
+  - small_bowel
+  - colon
+  - urinary_bladder
   - arteries
   - veins
   - muscles
-  - lungs
-  - MISC
-  - bones
-  - small bowel
-  - colon
-  - trajectory
   modelList: []
   gltfModels: []
   screwSelected: 0
