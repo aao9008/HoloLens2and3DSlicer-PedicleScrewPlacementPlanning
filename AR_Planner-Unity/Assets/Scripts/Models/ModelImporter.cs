@@ -44,53 +44,63 @@ public class ModelImporter : MonoBehaviour
 
         List <GameObject> models = new List<GameObject>();
 
-        GameObject parent = Importer.LoadFromFile(gltfPath); // This parent game object may hold one or many meshes.
+        // Load the model from the GLTF file
+        GameObject gltfModel = Importer.LoadFromFile(gltfPath); // This parent game object may hold one or many meshes.
+        Transform parentTransform = gltfModel.transform;
 
-        Transform parentTransform = parent.transform;
-
-        int count = parentTransform.childCount;
-
+        // Iterate over each mesh (structure/organ) within the gltf model
         for(int i = parentTransform.childCount - 1; i >= 0; i--)
         {
             Transform child = parentTransform.GetChild(i);
+            string modelName = child.name; // Name of organ/structure
 
-            string modelName = child.name;
+            /* Desired Object structure for child models: 
+             * 
+             * Empty Gameobject "Organ Name" (used for transformations and manipulations)
+             *  |
+             *  |__"grp1" (object holds mesh data of child model)
+            */
 
-            // Create a new parent GameObject with the name of the child
-            GameObject newParent = new GameObject(child.name);
-            // Set the newParent's position and rotation to match the child
-            newParent.transform.SetPositionAndRotation(child.position, child.rotation);
-
-            // Set the child's name to "grp1"
+            // rename object holding mesh data to "grp1"
             child.gameObject.name = "grp1";
-            child.SetParent(newParent.transform);
 
+            // Create emptpy gameobject and set object as parent of meshdata
+            GameObject newParent = CreateNewParent(child);
+            child.SetParent(newParent.transform);
             child.localScale = Vector3.one;
 
-            // Instantiate a prefab as a child of the new parent GameObject
+            // Instantiate the new prefab and set up its components
             GameObject newPrefab = Instantiate(newParent, Vector3.zero, Quaternion.identity);
-
-            BoxCollider boxCollider = newPrefab.AddComponent<BoxCollider>();
-
-            AddTightBoxColliderToMeshObject(newPrefab, modelName); // Resize box collider to roughly the size of the model
-
-            Debug.Log("Hi from model importer. The parent model is: " + parentModel);
-
-            AddScriptsToPrefab(newPrefab, modelName); // Add necessary scripts to the model
-
-            newPrefab.transform.localScale = Vector3.one * 0.001f; // Set scale to 0.001
-
-            newPrefab.name = modelName; // Set name to modelName
-
+            SetupPrefab(newPrefab, modelName);
 
             models.Add(newPrefab);
 
-            DestroyImmediate(newParent);
-            
+            // Clean up the temporary new parent
+            Object.DestroyImmediate(newParent);   
         }
-        DestroyImmediate(parent);
+        DestroyImmediate(gltfModel);
 
         return models; 
+    }
+
+    private static GameObject CreateNewParent(Transform child)
+    {
+        GameObject newParent = new GameObject(child.name);
+        newParent.transform.SetPositionAndRotation(child.position, child.rotation);
+        return newParent;
+    }
+
+    private static void SetupPrefab(GameObject prefab, string modelName)
+    {
+        if(modelName == parentModel) // Only primary parent model needs scripts and a box collider
+        {
+            prefab.AddComponent<BoxCollider>();
+            AddTightBoxColliderToMeshObject(prefab, modelName); // Resize box collider to roughly the size of the model
+            AddScriptsToPrefab(prefab, modelName); // Add necessary scripts to the model
+        }
+
+        prefab.transform.localScale = Vector3.one * 0.001f;
+        prefab.name = modelName;
     }
 
     // This method is called to crate a prafab from an OBJ model
