@@ -4,6 +4,7 @@ using System.Collections;
 using Microsoft.MixedReality.Toolkit.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using System.Diagnostics;
 
 
 public class Controller : MonoBehaviour
@@ -24,6 +25,7 @@ public class Controller : MonoBehaviour
     public AudioSource buttonUp;
 
     private Coroutine resetCoroutine;
+    private Coroutine speedCoroutine = null;
 
     bool buttonHeldDown = false;
     float holdStartTime = 0f;
@@ -171,22 +173,27 @@ public class Controller : MonoBehaviour
         }
     }
 
-    // Controls speed of model manipulations 
     void AdjustMoveSpeed()
     {
-        // Check if left or right bumper was pressed
-
-        if (Input.GetButtonDown("RightBumper") && moveSpeed < maxSpeed) // Increase move speed if right bumper was pressed
+        if (Input.GetButtonDown("RightBumper") && moveSpeed < maxSpeed)
         {
-            IncreaseMoveSpeed();
+            if (speedCoroutine != null)
+            {
+                StopCoroutine(speedCoroutine);
+            }
+            speedCoroutine = StartCoroutine(IncreaseMoveSpeed());
         }
-        else if (Input.GetButtonDown("LeftBumper") && moveSpeed > minSpeed) // Decrease move speed if left bumper was pressed
+        else if (Input.GetButtonDown("LeftBumper") && moveSpeed > minSpeed)
         {
-            DecreaseMoveSpeed();
+            if (speedCoroutine != null)
+            {
+                StopCoroutine(speedCoroutine);
+            }
+            speedCoroutine = StartCoroutine(DecreaseMoveSpeed());
         }
     }
 
-    void IncreaseMoveSpeed()
+    IEnumerator IncreaseMoveSpeed()
     {
         if (moveSpeed > 0.10f)
         {
@@ -200,10 +207,16 @@ public class Controller : MonoBehaviour
         // Trigger haptic feedback
         gamepad.SetMotorSpeeds(0.5f, 0.5f);
 
-        Debug.Log(moveSpeed);
+        // Wait for 0.2 seconds
+        yield return new WaitForSeconds(0.2f);
+
+        // Stop haptic feedback
+        gamepad.SetMotorSpeeds(0, 0);
+
+        UnityEngine.Debug.Log("Increased Speed: " + moveSpeed);
     }
 
-    void DecreaseMoveSpeed()
+    IEnumerator DecreaseMoveSpeed()
     {
         if (moveSpeed > 0.11f)
         {
@@ -217,7 +230,13 @@ public class Controller : MonoBehaviour
         // Trigger haptic feedback
         gamepad.SetMotorSpeeds(0.5f, 0.5f);
 
-        Debug.Log(moveSpeed);
+        // Wait for 0.2 seconds
+        yield return new WaitForSeconds(0.2f);
+
+        // Stop haptic feedback
+        gamepad.SetMotorSpeeds(0, 0);
+
+        UnityEngine.Debug.Log("Decreased Speed: " + moveSpeed);
     }
 
     void ResetMoveSpeed()
@@ -231,7 +250,7 @@ public class Controller : MonoBehaviour
         }
         else
         {
-            // Stop the coroutine if either bumper is released
+            // Stop the reset coroutine if either bumper is released
             if (resetCoroutine != null)
             {
                 StopCoroutine(resetCoroutine);
@@ -247,7 +266,7 @@ public class Controller : MonoBehaviour
         if (Input.GetButton("LeftBumper") && Input.GetButton("RightBumper"))
         {
             moveSpeed = 0.5f;
-            Debug.Log("Move speed reset: " + moveSpeed);
+            UnityEngine.Debug.Log("Move speed reset: " + moveSpeed);
 
             // Play audio cue
             PlayAudioCue();
@@ -257,6 +276,9 @@ public class Controller : MonoBehaviour
             yield return new WaitForSeconds(0.5f); // Duration of the haptic feedback
             gamepad.SetMotorSpeeds(0, 0); // Stop haptic feedback
         }
+
+        // Clear the reset coroutine reference after completion
+        resetCoroutine = null;
     }
 
     void AdjustHeight()

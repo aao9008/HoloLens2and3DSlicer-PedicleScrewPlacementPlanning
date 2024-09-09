@@ -5512,37 +5512,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   patientIDs:
-  - Demo
-  - Test
-  - Test-2
-  - Test-3
-  patientID: Test-3
+  - Demo 1
+  - Demo 2
+  - Test Patient
+  patientID: Test Patient
   patientModels:
   - spleen
-  - liver
-  - skin
-  - kidneys
-  - muscles
-  - trajectory
-  - bones
-  - small_bowel
+  - stomach
+  - small bowel
   - colon
-  - urinary_bladder
-  - arteries
-  - veins
+  - bones
+  - highlighted_colon
+  - near_small_bowel
+  - both_kidneys
+  - trajectory
+  - skin
   parentModel: skin
   target_models:
   - spleen
-  - liver
-  - kidneys
-  - trajectory
-  - bones
-  - small_bowel
+  - stomach
+  - small bowel
   - colon
-  - urinary_bladder
-  - arteries
-  - veins
-  - muscles
+  - bones
+  - highlighted_colon
+  - near_small_bowel
+  - both_kidneys
+  - trajectory
   modelList: []
   gltfModels: []
   screwSelected: 0
